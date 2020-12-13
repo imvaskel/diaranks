@@ -1,4 +1,3 @@
-import configparser
 import discord
 import os
 from discord.ext import commands
@@ -16,10 +15,6 @@ os.environ["JISHAKU_HIDE"] = "True"
 async def on_ready():
     print(f"Bot is ready")
     print("-" * 10)
-
-@bot.command()
-async def test(ctx):
-    await ctx.send("Test successful!")
 
 #Load cogs
 if __name__ == "__main__":
