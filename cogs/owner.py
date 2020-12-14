@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+import subprocess as sp
 
 class OwnerCog(commands.Cog, name="Owner"):
     """Owner Commands"""
@@ -79,6 +79,22 @@ class OwnerCog(commands.Cog, name="Owner"):
     async def active_cogs(self, ctx):
         s = str.join('\n', self.bot.cogs.keys())
         await ctx.send(embed=discord.Embed(title="Active Cogs:", description=f"```{s}```"))
+
+    @commands.command(aliases=['pull'], hidden = True)
+    @commands.is_owner()
+    async def sync(self, ctx):
+        """Get the most recent changes from the GitHub repository
+        Uses: p,sync"""
+        embedvar = discord.Embed(title="Syncing...", description="Syncing with the GitHub repository, this should take up to 15 seconds", color=0xff0000, timestamp=ctx.message.created_at)
+        msg = await ctx.send(embed=embedvar)
+        async with ctx.channel.typing():
+            output = sp.getoutput('git pull origin master')
+            await ctx.reply(f""" ```sh
+            {output} ```""")
+            msg1 = await ctx.send("Success!")
+            await msg1.delete()
+        embedvar = discord.Embed(title="Synced", description="Sync with the GitHub repository has completed, check the logs to make sure it worked", color=0x00ff00, timestamp=ctx.message.created_at)
+        await msg.edit(embed=embedvar)
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))

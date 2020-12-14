@@ -5,6 +5,7 @@ from settings import token
 from utils.CustomBot import CustomBot
 
 bot = CustomBot(command_prefix="!", intents = discord.Intents.all())
+bot.set_embed_color(0x2F3136)
 startup_extensions = ['cogs.help', 'jishaku', 'cogs.errors', 'cogs.owner', 'cogs.ranks', 'cogs.listener', 'cogs.etc']
 
 #Add jsk things

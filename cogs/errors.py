@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import prettify_exceptions
 
 class ErrorsCog(commands.Cog, name = "Errors"):
     #Error handler
@@ -19,6 +20,8 @@ class ErrorsCog(commands.Cog, name = "Errors"):
         elif isinstance(error, commands.NotOwner):
             await ctx.send(embed=discord.Embed(title="You do not own this bot.", color=discord.Color.red()))
         else:
+            prettify_exceptions.DefaultFormatter().theme['_ansi_enabled'] = False
+            traceback = ''.join(prettify_exceptions.DefaultFormatter().format_exception(type(error), error, error.__traceback__))
             embed = discord.Embed(title = "An error occurred!",
                                   description = "[Please report this to the bots GitHub with the codeblock's content.](https://github.com/ImVaskel/diabetes-discord-rank-bot)",
                                   color = discord.Color.red(),
@@ -28,6 +31,7 @@ class ErrorsCog(commands.Cog, name = "Errors"):
             embed.set_footer(text = "That above is a hyperlink to the github, click it!")
 
             await ctx.send(embed = embed)
+            print(traceback)
 
 def setup(bot):
     bot.add_cog(ErrorsCog(bot))
