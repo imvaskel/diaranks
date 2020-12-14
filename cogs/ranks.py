@@ -108,6 +108,8 @@ class RanksCog(commands.Cog, name = "Ranks"):
             await self.bot.db.commit()
             counter += 1
 
+        e = await self.bot.get_ranks()
+        self.bot.ranks = e
         await ctx.send(embed = discord.Embed(title = f"Successfully initialized {counter} users"))
 
 
