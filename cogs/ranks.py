@@ -110,7 +110,7 @@ class RanksCog(commands.Cog, name = "Ranks"):
 
         e = await self.bot.get_ranks()
         self.bot.ranks = e
-        await ctx.send(embed = discord.Embed(title = f"Successfully initialized {counter} users"))
+        await ctx.send(embed = discord.Embed(title = f"Successfully initialized {counter} users", color = self.bot.embed_color))
 
 
 

@@ -67,7 +67,7 @@ class OwnerCog(commands.Cog, name="Owner"):
             except Exception as p:
                 e.append(cog)
 
-        embed = discord.Embed(title="Reloaded all cogs")
+        embed = discord.Embed(title="Reloaded all cogs", color = self.bot.embed_color)
         embed.add_field(name="Succesful Cogs", value=str.join("   ", s))
         p = str.join("   ", e)
         if p == "": p = "None"
@@ -78,7 +78,7 @@ class OwnerCog(commands.Cog, name="Owner"):
     @commands.is_owner()
     async def active_cogs(self, ctx):
         s = str.join('\n', self.bot.cogs.keys())
-        await ctx.send(embed=discord.Embed(title="Active Cogs:", description=f"```{s}```"))
+        await ctx.send(embed=discord.Embed(title="Active Cogs:", description=f"```{s}```", color = self.bot.embed_color))
 
     @commands.command(aliases=['pull'], hidden = True)
     @commands.is_owner()
