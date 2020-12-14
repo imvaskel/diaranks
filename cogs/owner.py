@@ -89,7 +89,7 @@ class OwnerCog(commands.Cog, name="Owner"):
         msg = await ctx.send(embed=embedvar)
         async with ctx.channel.typing():
             output = sp.getoutput('git pull origin master')
-            await ctx.reply(f""" ```sh
+            await ctx.send(f""" ```sh
             {output} ```""")
             msg1 = await ctx.send("Success!")
             await msg1.delete()
