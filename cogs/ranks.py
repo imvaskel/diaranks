@@ -5,6 +5,9 @@ from discord.ext import commands, tasks
 import random
 from disrank.generator import Generator
 import asyncio
+import operator
+
+
 
 class RanksCog(commands.Cog, name = "Ranks"):
     def __init__(self, bot):
@@ -17,6 +20,14 @@ class RanksCog(commands.Cog, name = "Ranks"):
     def get_card(self, args):
         image = Generator().generate_profile(**args)
         return image
+
+    def get_rank(self, userId) -> int:
+        """Gets the users rank in the guild leaderboard"""
+        sorted_d = dict(sorted(self.bot.ranks.items(), key=operator.itemgetter(1), reverse=True))
+        a = [{i: self.bot.ranks[i]} for i in sorted_d]
+        for index, entry in enumerate(a):
+            if set(entry.keys()) == {userId}:
+                return index + 1
 
     @tasks.loop(minutes = 10)
     async def update_db(self):
@@ -72,6 +83,8 @@ class RanksCog(commands.Cog, name = "Ranks"):
         if member is None:
             member = ctx.author
 
+        position = self.get_rank(member.id)
+
         xp = divmod(self.bot.ranks[member.id], 500)
         args = {
             'bg_image': '',
@@ -80,7 +93,7 @@ class RanksCog(commands.Cog, name = "Ranks"):
             'current_xp': 0,
             'user_xp': xp[1],
             'next_xp': 500,
-            'user_position': 1,
+            'user_position': position,
             'user_name': str(member),
             'user_status': member.status.name,
         }
