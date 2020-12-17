@@ -35,7 +35,7 @@ class ModeratorCog(Cog, name = "Moderator"):
     async def add_level_role(self, ctx, level: int, *, role: discord.Role):
         """Adds autorole to the given level"""
         try:
-            self.bot.level_roles[role.id]
+            self.bot.level_roles[level]
         except:
             return await ctx.send("Seems this role is already bound to a level.")
 
@@ -67,7 +67,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         s = ""
 
         for entry in roles:
-            s += f"`{entry[0]}`:    {entry[1].mention}"
+            s += f"`{entry[0]}`:    {entry[1].mention}\n"
 
         await ctx.reply(embed = discord.Embed(description=s))
 
