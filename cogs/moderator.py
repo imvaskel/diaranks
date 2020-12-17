@@ -40,7 +40,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         except:
             pass
 
-        await self.bot.db.excecute("INSERT INTO roles(roleId, level) VALUES(?)", (role.id, level))
+        await self.bot.db.excecute("INSERT INTO roles(roleId, level) VALUES(?, ?)", (role.id, level))
 
         self.bot.level_roles.update({level: role.id})
 
