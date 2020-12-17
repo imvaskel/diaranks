@@ -4,7 +4,10 @@ from discord.ext import commands
 from settings import token
 from utils.CustomBot import CustomBot
 
-bot = CustomBot(command_prefix="!", intents = discord.Intents.all(), allowed_mentions = discord.AllowedMentions().none())
+bot = CustomBot(command_prefix="!",
+                intents = discord.Intents.all(),
+                allowed_mentions = discord.AllowedMentions().none(),
+                activity = discord.Activity(type = discord.ActivityType.listening, name = "!help | !rank"))
 bot.embed_color = 0x2F3136
 startup_extensions = ['cogs.help', 'jishaku', 'cogs.errors', 'cogs.owner', 'cogs.ranks', 'cogs.listener', 'cogs.etc', 'cogs.moderator']
 

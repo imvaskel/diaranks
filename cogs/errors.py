@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, flags
 import prettify_exceptions
 
 class ErrorsCog(commands.Cog, name = "Errors"):
@@ -10,7 +10,7 @@ class ErrorsCog(commands.Cog, name = "Errors"):
         ignored_errors = (commands.CommandNotFound)
         stringed_errors = (commands.MissingPermissions, commands.MissingRequiredArgument, commands.BadArgument,
                            commands.BotMissingPermissions,
-                           discord.NotFound, commands.CommandOnCooldown, commands.BadUnionArgument)
+                           discord.NotFound, commands.CommandOnCooldown, commands.BadUnionArgument, flags.ArgumentParsingError)
 
         if isinstance(error, ignored_errors):
             return
