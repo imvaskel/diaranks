@@ -19,7 +19,7 @@ class ListenerCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.channel.id in self.bot.blacklist or message.guild.id != 257554742371155998:
-            return await self.bot.process_commands(message)
+            return
         if not message.author.bot:
             self.bot.ranks[message.author.id] += random.randrange(1, 6)
             await self.check_and_add_roles(message.author)
