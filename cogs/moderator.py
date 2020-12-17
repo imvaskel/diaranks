@@ -36,8 +36,9 @@ class ModeratorCog(Cog, name = "Moderator"):
         """Adds autorole to the given level"""
         try:
             self.bot.level_roles[level]
-        except:
             return await ctx.send("Seems this role is already bound to a level.")
+        except:
+            pass
 
         await self.bot.db.excecute("INSERT INTO roles(roleId, level) VALUES(?)", (role.id, level))
 
