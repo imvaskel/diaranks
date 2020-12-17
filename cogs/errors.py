@@ -27,7 +27,7 @@ class ErrorsCog(commands.Cog, name = "Errors"):
                                   color = discord.Color.red(),
                                   timestamp = ctx.message.created_at)
             embed.add_field(name = "Error Details: ",
-                            value = f"```py\n{traceback}```")
+                            value = f"```py\n{error}```")
             embed.set_footer(text = "That above is a hyperlink to the github, click it!")
 
             await ctx.send(embed = embed)
