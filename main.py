@@ -6,7 +6,7 @@ from utils.CustomBot import CustomBot
 
 bot = CustomBot(command_prefix="!", intents = discord.Intents.all(), allowed_mentions = discord.AllowedMentions().none())
 bot.embed_color = 0x2F3136
-startup_extensions = ['cogs.help', 'jishaku', 'cogs.errors', 'cogs.owner', 'cogs.ranks', 'cogs.listener', 'cogs.etc']
+startup_extensions = ['cogs.help', 'jishaku', 'cogs.errors', 'cogs.owner', 'cogs.ranks', 'cogs.listener', 'cogs.etc', 'cogs.moderator']
 
 #Add jsk things
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"

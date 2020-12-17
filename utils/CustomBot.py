@@ -15,6 +15,10 @@ class CustomBot(commands.AutoShardedBot):
         userID BIGINT PRIMARY KEY,
         xp BIGINT DEFAULT 0);"""))
         self.ranks = self.loop.run_until_complete(self.get_ranks())
+        self.loop.run_until_complete(self.initialize_db())
+        self.blacklist = self.loop.run_until_complete(self.get_blacklist())
+        self.level_roles = self.loop.run_until_complete(self.get_roles())
+
 
     async def get_ranks(self):
         ranks = {}
@@ -37,3 +41,18 @@ class CustomBot(commands.AutoShardedBot):
             await self.db.commit()
             count += 1
         print(f"Updated the db for {count} users.")
+
+    async def initialize_db(self):
+        """Initializes the db tables"""
+        await self.db.execute("CREATE TABLE IF NOT EXISTS roles (roleId BIGINT PRIMARY KEY, level INT);")
+        await self.db.execute("CREATE TABLE IF NOT EXISTS blacklist (channelId BIGINT PRIMARY KEY);")
+
+    async def get_blacklist(self):
+        """Gets the blacklist"""
+        cursor = await self.db.execute("SELECT * FROM blacklist")
+        return await cursor.fetchall()
+
+    async def get_roles(self):
+        """Gets the roles"""
+        cursor = await self.db.execute("SELECT * FROM roles")
+        return await cursor.fetchall()
