@@ -40,18 +40,6 @@ class RanksCog(commands.Cog, name = "Ranks"):
             count += 1
         print(f"Updated the db for {count} users.")
 
-    #@commands.command()
-    #async def rank(self, ctx, user: discord.Member = None):
-        #user = user or ctx.author
-
-        #xp = divmod(self.bot.ranks[user.id], 500)
-
-        #embed = discord.Embed(title=f"{str(user)}'s rank", color = 0x2F3136)
-        #embed.add_field(name = "Level", value = xp[0])
-        #embed.add_field(name = "XP", value = self.bot.ranks[user.id] or None, inline=False)
-
-        #await ctx.send(embed = embed)
-
     @commands.command()
     @commands.is_owner()
     async def update(self, ctx):

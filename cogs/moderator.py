@@ -40,7 +40,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         except:
             pass
 
-        await self.bot.db.excecute("INSERT INTO roles(roleId, level) VALUES(?, ?)", (role.id, level))
+        await self.bot.db.execute("INSERT INTO roles(roleId, level) VALUES(?, ?)", (role.id, level))
 
         self.bot.level_roles.update({level: role.id})
 
@@ -55,7 +55,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         except:
             return await ctx.reply("This level has no role bound to it.")
 
-        await self.bot.db.excecute("DELETE FROM roles WHERE level = ?", (level,))
+        await self.bot.db.execute("DELETE FROM roles WHERE level = ?", (level,))
 
         del self.bot.level_roles[level]
 
