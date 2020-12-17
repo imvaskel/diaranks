@@ -52,7 +52,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         try:
             self.bot.level_roles[level]
         except:
-            await ctx.reply("This level has no role bound to it.")
+            return await ctx.reply("This level has no role bound to it.")
 
         await self.bot.db.excecute("DELETE FROM roles WHERE level = ?", (level,))
 
