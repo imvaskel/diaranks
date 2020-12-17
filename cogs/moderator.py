@@ -63,7 +63,7 @@ class ModeratorCog(Cog, name = "Moderator"):
 
     @commands.command()
     async def autoroles(self, ctx):
-        roles = [[level, ctx.guild.get_role(self.bot.level_roles[level])] for level in list(self.bot.level_roles.keys())]
+        roles = [[level, ctx.guild.get_role(self.bot.level_roles[level])] for level in self.bot.level_roles.keys()]
         s = ""
 
         for entry in roles:
