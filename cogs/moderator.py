@@ -70,7 +70,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         for entry in roles:
             s += f"`{entry[0]}`:    {entry[1].mention}\n"
 
-        await ctx.reply(embed = discord.Embed(title = "Level:   Role"description=s))
+        await ctx.reply(embed = discord.Embed(title = "Level:   Role", description=s))
 
 
 def setup(bot):
