@@ -40,11 +40,6 @@ class RanksCog(commands.Cog, name = "Ranks"):
             count += 1
         print(f"Updated the db for {count} users.")
 
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if not message.author.bot:
-            self.bot.ranks[message.author.id] += random.randrange(1, 6)
-
     #@commands.command()
     #async def rank(self, ctx, user: discord.Member = None):
         #user = user or ctx.author

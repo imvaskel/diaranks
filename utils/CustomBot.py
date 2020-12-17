@@ -55,4 +55,8 @@ class CustomBot(commands.AutoShardedBot):
     async def get_roles(self):
         """Gets the roles"""
         cursor = await self.db.execute("SELECT * FROM roles")
-        return await cursor.fetchall()
+        roles = await cursor.fetchall()
+        d = {}
+        for i in roles:
+            d.update({i[1]: i[0]})
+        return d
