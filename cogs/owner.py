@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import subprocess as sp
 import os
+from jishaku import  codeblocks
 
 class OwnerCog(commands.Cog, name="Owner"):
     """Owner Commands"""
@@ -104,6 +105,12 @@ class OwnerCog(commands.Cog, name="Owner"):
         """Restarts the bot, actually just closes the bot"""
         await ctx.send("Bye!")
         await self.bot.close()
+
+    @commands.command()
+    @commands.is_owner()
+    async def journalctl(self, ctx):
+        await ctx.invoke(self.bot.get_command('jsk sh'),
+                         argument=codeblocks.codeblock_converter("journalctl -u botService"))
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))
