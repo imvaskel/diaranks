@@ -16,9 +16,9 @@ class ErrorsCog(commands.Cog, name = "Errors"):
             return
 
         if isinstance(error, stringed_errors):
-            await ctx.send(embed=discord.Embed(title=str(error), color=discord.Color.red()))
+            await ctx.reply(embed=discord.Embed(title=str(error), color=discord.Color.red()))
         elif isinstance(error, commands.NotOwner):
-            await ctx.send(embed=discord.Embed(title="You do not own this bot.", color=discord.Color.red()))
+            await ctx.reply(embed=discord.Embed(title="You do not own this bot.", color=discord.Color.red()))
         else:
             prettify_exceptions.DefaultFormatter().theme['_ansi_enabled'] = False
             traceback = ''.join(prettify_exceptions.DefaultFormatter().format_exception(type(error), error, error.__traceback__))

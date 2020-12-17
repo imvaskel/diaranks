@@ -76,7 +76,7 @@ class RanksCog(commands.Cog, name = "Ranks"):
 
     @commands.command()
     @commands.cooldown(1, 5, BucketType.user)
-    async def rank(self, ctx, member: discord.Member = None):
+    async def rank(self, ctx, *, member: discord.Member = None):
         if member is None:
             member = ctx.author
 
