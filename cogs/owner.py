@@ -110,7 +110,7 @@ class OwnerCog(commands.Cog, name="Owner"):
     @commands.is_owner()
     async def journalctl(self, ctx):
         await ctx.invoke(self.bot.get_command('jsk sh'),
-                         argument=codeblocks.codeblock_converter("journalctl -u botService"))
+                         argument=codeblocks.codeblock_converter("journalctl -u diaranks"))
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))
