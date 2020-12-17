@@ -61,6 +61,16 @@ class ModeratorCog(Cog, name = "Moderator"):
         await ctx.reply(
             embed=discord.Embed(description=f"Successfully removed autorole from level {level}"))
 
+    @commands.command()
+    async def autoroles(self, ctx):
+        roles = [[level, ctx.guild.get_role(self.bot.level_roles[level])] for level in list(self.bot.level_roles.keys())]
+        s = ""
+
+        for entry in roles:
+            s += f"`{entry[0]}`:    {entry[1].mention}"
+
+        await ctx.reply(embed = discord.Embed(description=s))
+
 
 def setup(bot):
     bot.add_cog(ModeratorCog(bot))
