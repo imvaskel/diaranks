@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import subprocess as sp
+import os
 
 class OwnerCog(commands.Cog, name="Owner"):
     """Owner Commands"""
@@ -8,7 +9,7 @@ class OwnerCog(commands.Cog, name="Owner"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='load', hidden=True)
+    @commands.command(name='load')
     async def load_cog(self, ctx, *, cog: str):
         # Command which Loads a Module.
         # Remember to use dot path. e.g: cogs.owner
@@ -20,7 +21,7 @@ class OwnerCog(commands.Cog, name="Owner"):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command(name='unload', hidden=True)
+    @commands.command(name='unload')
     @commands.is_owner()
     async def unload_cog(self, ctx, *, cog: str):
         # Command which Unloads a Module.
@@ -33,7 +34,7 @@ class OwnerCog(commands.Cog, name="Owner"):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command(name='reload', hidden=True)
+    @commands.command(name='reload')
     @commands.is_owner()
     async def reload_cog(self, ctx, *, cog: str):
         # Command which Reloads a Module.
@@ -48,7 +49,7 @@ class OwnerCog(commands.Cog, name="Owner"):
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command(hidden=True, aliases=["reloadall", "ra"])
+    @commands.command(aliases=["reloadall", "ra"])
     @commands.is_owner()
     async def reload_all(self, ctx):
         s = []
@@ -74,13 +75,13 @@ class OwnerCog(commands.Cog, name="Owner"):
         embed.add_field(name="Unsuccesful Cogs", value=p)
         await ctx.send(embed=embed)
 
-    @commands.command(name='cogs', hidden=True)
+    @commands.command(name='cogs')
     @commands.is_owner()
     async def active_cogs(self, ctx):
         s = str.join('\n', self.bot.cogs.keys())
         await ctx.send(embed=discord.Embed(title="Active Cogs:", description=f"```{s}```", color = self.bot.embed_color))
 
-    @commands.command(aliases=['pull'], hidden = True)
+    @commands.command(aliases=['pull'])
     @commands.is_owner()
     async def sync(self, ctx):
         """Get the most recent changes from the GitHub repository
@@ -95,6 +96,13 @@ class OwnerCog(commands.Cog, name="Owner"):
             await msg1.delete()
         embedvar = discord.Embed(title="Synced", description="Sync with the GitHub repository has completed, check the logs to make sure it worked", color=0x00ff00, timestamp=ctx.message.created_at)
         await msg.edit(embed=embedvar)
+
+    @commands.command()
+    @commands.is_owner()
+    async def restart(self, ctx):
+        """Restarts the bot, actually just closes the bot"""
+        await ctx.send("Bye!")
+        await self.bot.close()
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))
