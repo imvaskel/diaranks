@@ -10,6 +10,7 @@ class OwnerCog(commands.Cog, name="Owner"):
         self.bot = bot
 
     @commands.command(name='load')
+    @commands.is_owner()
     async def load_cog(self, ctx, *, cog: str):
         # Command which Loads a Module.
         # Remember to use dot path. e.g: cogs.owner
