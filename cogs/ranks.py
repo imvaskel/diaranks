@@ -65,6 +65,7 @@ class RanksCog(commands.Cog, name = "Ranks"):
     @commands.command()
     @commands.cooldown(1, 5, BucketType.user)
     async def rank(self, ctx, *, member: discord.Member = None):
+        """Returns the users rank placard, each level is 100 xp"""
         if member is None:
             member = ctx.author
 

@@ -106,7 +106,7 @@ class OwnerCog(commands.Cog, name="Owner"):
         await ctx.send("Bye!")
         await self.bot.close()
 
-    @commands.command()
+    @commands.command(aliases = ['logs'])
     @commands.is_owner()
     async def journalctl(self, ctx):
         await ctx.invoke(self.bot.get_command('jsk sh'),
