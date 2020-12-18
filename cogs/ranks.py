@@ -89,7 +89,7 @@ class RanksCog(commands.Cog, name = "Ranks"):
             'profile_image': str(member.avatar_url_as(format='png')),
             'level': level,
             'current_xp': 0,
-            'user_xp': '0',
+            'user_xp': 0,
             'next_xp': 500,
             'user_position': position,
             'user_name': str(member),
