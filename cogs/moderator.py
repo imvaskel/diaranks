@@ -32,6 +32,7 @@ class ModeratorCog(Cog, name = "Moderator"):
 
     @commands.group(name = "levels")
     async def level_group(self, ctx):
+        """A group of commands that deals with level up roles."""
         if ctx.invoked_subcommand is None:
             await ctx.send(f"No subcommand passed, use `{ctx.prefix}help levels` to see the commands.")
 
@@ -75,7 +76,7 @@ class ModeratorCog(Cog, name = "Moderator"):
         for entry in roles:
             s += f"`{entry[0]}`:    {entry[1].mention}\n"
 
-        await ctx.reply(embed = discord.Embed(title = "Level:   Role", description=s))
+        await ctx.reply(embed = discord.Embed(title = "Level:   Role", description=s, color = self.bot.embed_color))
 
 
 def setup(bot):
