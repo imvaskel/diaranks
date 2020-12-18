@@ -70,7 +70,7 @@ class RanksCog(commands.Cog, name = "Ranks"):
 
         position = self.get_rank(member.id)
 
-        xp = divmod(self.bot.ranks[member.id], 500)
+        xp = divmod(self.bot.ranks[member.id], 100)
         args = {
             'bg_image': '',
             'profile_image': str(member.avatar_url_as(format='png')),

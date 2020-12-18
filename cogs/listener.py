@@ -7,7 +7,7 @@ class ListenerCog(commands.Cog):
         self.guild_id = 257554742371155998
 
     async def check_and_add_roles(self, member: discord.Member):
-        xp = divmod(self.bot.ranks[member.id], 500)
+        xp = divmod(self.bot.ranks[member.id], 100)
         try:
             info = self.bot.level_roles[xp[0]]
             guild = self.bot.get_guild(self.guild_id)
