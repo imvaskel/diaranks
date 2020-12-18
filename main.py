@@ -3,6 +3,7 @@ import os
 from discord.ext import commands
 from settings import token
 from utils.CustomBot import CustomBot
+import discordbotdash.dash as dbd
 
 bot = CustomBot(command_prefix="!",
                 intents = discord.Intents.all(),
@@ -17,6 +18,7 @@ os.environ["JISHAKU_HIDE"] = "True"
 
 @bot.event
 async def on_ready():
+    dbd.openDash(bot)
     print(f"Bot is ready")
     print("-" * 10)
 
