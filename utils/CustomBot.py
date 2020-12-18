@@ -50,7 +50,7 @@ class CustomBot(commands.AutoShardedBot):
     async def get_blacklist(self):
         """Gets the blacklist"""
         cursor = await self.db.execute("SELECT * FROM blacklist")
-        return await cursor.fetchall()
+        return [i[0] for i in await cursor.fetchall()]
 
     async def get_roles(self):
         """Gets the roles"""
