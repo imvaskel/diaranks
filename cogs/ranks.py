@@ -9,6 +9,18 @@ import asyncio
 import operator
 
 
+def _get_level_xp(n):
+    return 5 * (n ** 2) + 50 * n + 100
+
+
+def _get_level_from_xp(xp):
+    remaining_xp = int(xp)
+    level = 0
+    while remaining_xp >= _get_level_xp(level):
+        remaining_xp -= _get_level_xp(level)
+        level += 1
+    return level
+
 
 class RanksCog(commands.Cog, name = "Ranks"):
     def __init__(self, bot):
@@ -70,13 +82,14 @@ class RanksCog(commands.Cog, name = "Ranks"):
 
         position = self.get_rank(member.id)
 
-        xp = divmod(self.bot.ranks[member.id], 100)
+        level = _get_level_from_xp(self.bot.ranks[member.id])
+
         args = {
             'bg_image': '',
             'profile_image': str(member.avatar_url_as(format='png')),
-            'level': xp[0],
+            'level': level,
             'current_xp': 0,
-            'user_xp': xp[1],
+            'user_xp': '0',
             'next_xp': 500,
             'user_position': position,
             'user_name': str(member),
