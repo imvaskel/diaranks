@@ -1,6 +1,17 @@
 import discord, random
-from ranks import _get_level_from_xp
 from discord.ext import commands
+
+def _get_level_xp(n):
+    return 5 * (n ** 2) + 50 * n + 100
+
+
+def _get_level_from_xp(xp):
+    remaining_xp = int(xp)
+    level = 0
+    while remaining_xp >= _get_level_xp(level):
+        remaining_xp -= _get_level_xp(level)
+        level += 1
+    return level
 
 class ListenerCog(commands.Cog):
     def __init__(self, bot):
