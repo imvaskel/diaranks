@@ -30,7 +30,12 @@ class ModeratorCog(Cog, name = "Moderator"):
 
         await ctx.send(f"{channel.mention} successfully unblacklisted.")
 
-    @commands.command()
+    @commands.group(name = "levels")
+    async def level_group(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send(f"No subcommand passed, use `{ctx.prefix}help levels` to see the commands.")
+
+    @level_group.command(name = "add")
     @commands.has_permissions(manage_guild = True)
     async def add_level_role(self, ctx, level: int, *, role: discord.Role):
         """Adds autorole to the given level"""
@@ -46,7 +51,7 @@ class ModeratorCog(Cog, name = "Moderator"):
 
         await ctx.reply(embed = discord.Embed(description=f"Successfully added {role.mention} to be given at level {level}"))
 
-    @commands.command()
+    @level_group.command(name = "remove")
     @commands.has_permissions(manage_guild=True)
     async def remove_level_role(self, ctx, level: int):
         """Removes autorole to the given level"""
@@ -62,8 +67,8 @@ class ModeratorCog(Cog, name = "Moderator"):
         await ctx.reply(
             embed=discord.Embed(description=f"Successfully removed autorole from level {level}"))
 
-    @commands.command()
-    async def autoroles(self, ctx):
+    @level_group.command(name = "list")
+    async def list_level_roles(self, ctx):
         roles = [[level, ctx.guild.get_role(self.bot.level_roles[level])] for level in self.bot.level_roles.keys()]
         s = ""
 
