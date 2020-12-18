@@ -38,7 +38,6 @@ class RanksCog(commands.Cog, name = "Ranks"):
                                       (entry, self.bot.ranks[entry]))
             await self.bot.db.commit()
             count += 1
-        print(f"Updated the db for {count} users.")
 
     @commands.command()
     @commands.is_owner()
