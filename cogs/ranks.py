@@ -123,6 +123,10 @@ class RanksCog(commands.Cog, name = "Ranks"):
         self.bot.ranks = e
         await ctx.send(embed = discord.Embed(title = f"Successfully initialized {counter} users", color = self.bot.embed_color))
 
+    @commands.command()
+    async def xp(self, ctx, level: int):
+        await ctx.reply(f"To get to level `{level}` you need `{_get_level_xp(level)}` xp")
+
 
 
 def setup(bot):
