@@ -1,4 +1,5 @@
 import discord, random
+from ranks import _get_level_from_xp
 from discord.ext import commands
 
 class ListenerCog(commands.Cog):
@@ -7,9 +8,9 @@ class ListenerCog(commands.Cog):
         self.guild_id = 257554742371155998
 
     async def check_and_add_roles(self, member: discord.Member):
-        xp = divmod(self.bot.ranks[member.id], 100)
+        level = _get_level_from_xp(self.bot.ranks[member.id])
         try:
-            info = self.bot.level_roles[xp[0]]
+            info = self.bot.level_roles[level]
             guild = self.bot.get_guild(self.guild_id)
             role = guild.get_role(info)
             await member.add_roles(role, reason = "Automatically done for levelling up.")
