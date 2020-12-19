@@ -12,6 +12,13 @@ import operator
 def _get_level_xp(n):
     return 5 * (n ** 2) + 50 * n + 100
 
+def _get_remaining_xp(xp):
+    remaining_xp = int(xp)
+    level = 0
+    while remaining_xp >= _get_level_xp(level):
+        remaining_xp -= _get_level_xp(level)
+        level += 1
+    return remaining_xp
 
 def _get_level_from_xp(xp):
     remaining_xp = int(xp)
@@ -83,14 +90,15 @@ class RanksCog(commands.Cog, name = "Ranks"):
         position = self.get_rank(member.id)
 
         level = _get_level_from_xp(self.bot.ranks[member.id])
+        remaining_xp = _get_remaining_xp(self.bot.ranks[member.id])
 
         args = {
             'bg_image': '',
             'profile_image': str(member.avatar_url_as(format='png')),
             'level': level,
             'current_xp': 0,
-            'user_xp': 0,
-            'next_xp': 500,
+            'user_xp': remaining_xp,
+            'next_xp': _get_level_xp(level+1),
             'user_position': position,
             'user_name': str(member),
             'user_status': member.status.name,
