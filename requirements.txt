@@ -1,0 +1,5 @@
+discord.py
+jishaku
+toml
+asyncpg
+git+https://github.com/rapptz/discord-ext-menus

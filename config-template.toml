@@ -1,0 +1,36 @@
+[env]
+JISHAKU_NO_UNDERSCORE = "True"
+JISHAKU_NO_DM_TRACEBACK = "True"
+JISHAKU_HIDE = "True"
+
+[ranks]
+cooldown = 60
+min = 5
+max = 10
+id = 0 # Guild id for the ranks to count in
+
+[bot]
+token = ""
+extensions = [
+    "jishaku", "utils.help"
+]
+
+[bot.config]
+command_prefix = ""
+owner_ids = []
+description = ""
+
+[bot.activity]
+type = "" # watching, streaming, listening, competing (case sensitive)
+text = ""
+
+[bot.logging]
+level = "INFO" # Info, Debug, etc (keep default unless mega-testing.)
+format = "[%(asctime)s] [%(levelname)s] %(name)s: %(message)s"
+
+[bot.database]
+# Do not touch any of this except for the password if using docker.
+host = "postgres"
+port = 5432
+user = "postgres"
+password = "" # Set this
