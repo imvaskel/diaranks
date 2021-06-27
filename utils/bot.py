@@ -1,6 +1,7 @@
 import logging
+import operator
 import os
-from typing import Dict
+from typing import Dict, Union, Optional
 
 import asyncpg
 import discord
@@ -24,25 +25,42 @@ class Bot(commands.Bot):
                 name = activity["text"]
             )
 
+        intents = discord.Intents.default()
+        intents.members = True
+
         super().__init__(
             **self.config.get("bot").get("config"),
-            activity = activity
+            activity = activity,
+            allowed_mentions=discord.AllowedMentions(**self.config["bot"]["allowed_mentions"]),
+            intents=intents
         )
-
-        self.loop.run_until_complete(self._ainit())
 
         self.roles: Dict[int, int] = {} # Level, Role ID
         self.xp: Dict[int, int] = {} # User ID, XP
+        self.loop.run_until_complete(self._ainit())
 
         self._configure_env()
         self._configure_logging()
         self._load_extensions()
 
+        self.error_color = discord.Color.red()
+
     async def _ainit(self) -> None:
-        # self.db = await asyncpg.create_pool(
-        #     **self.config.get("bot").get("database")
-        # )
-        pass
+        self.db = await asyncpg.create_pool(
+            **self.config.get("bot").get("database")
+        )
+
+        rows = await self.db.fetch("SELECT * FROM levels")
+
+        for row in rows:
+            self.xp[row["id"]] = row["xp"]
+
+        rows = await self.db.fetch("SELECT * FROM roles")
+
+        if not rows: return
+
+        for row in rows:
+            self.roles[row["level"]] = row["id"]
 
     def _load_extensions(self) -> None:
         for extension in self.config["bot"]["extensions"]:
@@ -67,3 +85,29 @@ class Bot(commands.Bot):
 
     def run(self, token=None) -> None:
         return super().run(token or self.config["bot"]["token"], bot=True, reconnect=True)
+
+    async def on_message(self, message: discord.Message) -> None:
+        if message.guild is None or message.author.bot:
+            return
+
+        return await super().on_message(message)
+
+    def get_sorted_leaderboard(self) -> list[tuple[int, int]]:
+        sorted_d = dict(sorted(self.xp.items(), key=operator.itemgetter(1), reverse=True))
+        return [
+            (i, self.xp[i]) for i in sorted_d
+        ]
+
+    def get_user_position(self, user: Union[int, int]) -> int:
+        if isinstance(user, discord.User):
+            user = user.id
+
+        index = 0
+
+        for i, j in enumerate(self.get_sorted_leaderboard()):
+            if j[0] == user:
+                index = i
+                break
+
+        return index
+

@@ -12,8 +12,14 @@ id = 0 # Guild id for the ranks to count in
 [bot]
 token = ""
 extensions = [
-    "jishaku", "utils.help"
+    "jishaku", "utils.help", "cogs.ranks", "cogs.errors", "cogs.management", "cogs.owner"
 ]
+
+[bot.allowed_mentions]
+roles = false
+everyone = false
+users = false
+replied_user = false
 
 [bot.config]
 command_prefix = ""

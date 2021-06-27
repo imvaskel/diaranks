@@ -1,0 +1,21 @@
+version: "1.0"
+services: 
+    postgres:
+        restart: always
+        build: ./db
+        volumes:
+            - type: volumes
+              source: bot-db
+              target: /var/lib/postgresql/data
+        environment: 
+            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=${pg_password}
+    bot:
+        restart: always
+        build: .
+        depends_on:
+            - postgres
+        command: ["./wait-for-it.sh", "postgres:5432", "--", "python", "bot.py"]
+volumes:
+    bot-db:
