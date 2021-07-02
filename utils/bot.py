@@ -1,7 +1,8 @@
+from datetime import datetime
 import logging
 import operator
 import os
-from typing import Dict, Union, Optional
+from typing import Dict, List, Union, Optional
 
 import asyncpg
 import discord
@@ -14,6 +15,7 @@ class Bot(commands.Bot):
     def __init__(self) -> None:
         self.config = toml.load("./config.toml")
         self.logger = logging.getLogger(__name__)
+        self.start_time = datetime.now()
 
         activity = self.config["bot"]["activity"]
 
@@ -25,21 +27,18 @@ class Bot(commands.Bot):
                 name = activity["text"]
             )
 
-        intents = discord.Intents.default()
-        intents.members = True
-
         super().__init__(
             **self.config.get("bot").get("config"),
             activity = activity,
             allowed_mentions=discord.AllowedMentions(**self.config["bot"]["allowed_mentions"]),
-            intents=intents
+            intents=discord.Intents.all()
         )
 
         self.roles: Dict[int, int] = {} # Level, Role ID
         self.xp: Dict[int, int] = {} # User ID, XP
+        self.blacklist: List[int] = [] # list of blacklisted channel ids
         self.loop.run_until_complete(self._ainit())
 
-        self._configure_env()
         self._configure_logging()
         self._load_extensions()
 
@@ -52,15 +51,21 @@ class Bot(commands.Bot):
 
         rows = await self.db.fetch("SELECT * FROM levels")
 
-        for row in rows:
-            self.xp[row["id"]] = row["xp"]
+        if rows:
+            for row in rows:
+                self.xp[row["id"]] = row["xp"]
 
         rows = await self.db.fetch("SELECT * FROM roles")
 
-        if not rows: return
+        if rows:
+            for row in rows:
+                self.roles[row["level"]] = row["id"]
 
-        for row in rows:
-            self.roles[row["level"]] = row["id"]
+        rows = await self.db.fetch("SELECT * FROM blacklist")
+
+        if rows:
+            for row in rows:
+                self.blacklist.append(row["id"])
 
     def _load_extensions(self) -> None:
         for extension in self.config["bot"]["extensions"]:
@@ -79,12 +84,8 @@ class Bot(commands.Bot):
         handler.setFormatter(logging.Formatter(config["format"]))
         logger.addHandler(handler)
 
-    def _configure_env(self) -> None:
-        for key, value in self.config["env"].items():
-            os.environ[key] = value
-
     def run(self, token=None) -> None:
-        return super().run(token or self.config["bot"]["token"], bot=True, reconnect=True)
+        return super().run(token or self.config["bot"]["token"])
 
     async def on_message(self, message: discord.Message) -> None:
         if message.guild is None or message.author.bot:
@@ -98,16 +99,16 @@ class Bot(commands.Bot):
             (i, self.xp[i]) for i in sorted_d
         ]
 
-    def get_user_position(self, user: Union[int, int]) -> int:
+    def get_user_position(self, user: Union[int, discord.User]) -> int:
         if isinstance(user, discord.User):
             user = user.id
 
-        index = 0
+        leaderboard = self.get_sorted_leaderboard()
 
-        for i, j in enumerate(self.get_sorted_leaderboard()):
-            if j[0] == user:
-                index = i
-                break
+        for index, entry in enumerate(leaderboard):
+            id, _ = entry
 
-        return index
+            if id == user:
+                return index + 1
+        return 0
 

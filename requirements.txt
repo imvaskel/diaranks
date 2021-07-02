@@ -1,8 +1,8 @@
-discord.py
 jishaku
 toml
 asyncpg
 requests
 psutil
 git+https://github.com/rapptz/discord-ext-menus
+git+https://github.com/oliver-ni/discord-ext-menus-views
 git+https://github.com/imvaskel/disrank

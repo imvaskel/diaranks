@@ -6,6 +6,10 @@ CREATE TABLE levels(
 );
 
 CREATE TABLE roles(
-    level INT PRIMARY KEY,
+    level BIGINT PRIMARY KEY,
     id BIGINT NOT NULL
+);
+
+CREATE TABLE blacklist(
+    id BIGINT PRIMARY KEY
 );

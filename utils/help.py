@@ -4,13 +4,15 @@ from typing import TYPE_CHECKING, List, Mapping, Optional, Tuple
 
 import discord
 from discord.ext import commands, menus
-from discord.ext.commands.cog import Cog
-from discord.ext.commands.core import Command, Group
+
+from discord.ext.menus.views import ViewMenuPages
 
 if TYPE_CHECKING:
     from .bot import Bot
+    from discord.ext.commands.cog import Cog
+    from discord.ext.commands.core import Command, Group
 
-class HelpPaginator(menus.MenuPages):
+class HelpPaginator(ViewMenuPages):
     def __init__(self, source, **kwargs):
         super().__init__(source, **kwargs)
 

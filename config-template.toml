@@ -1,8 +1,3 @@
-[env]
-JISHAKU_NO_UNDERSCORE = "True"
-JISHAKU_NO_DM_TRACEBACK = "True"
-JISHAKU_HIDE = "True"
-
 [ranks]
 cooldown = 60
 min = 5

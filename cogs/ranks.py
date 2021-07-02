@@ -1,14 +1,15 @@
 from __future__ import annotations
-import logging
 
+import logging
 from random import randint
-from typing import List, TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, List, Tuple
 
 import discord
 from discord import member
 from discord.ext import commands, menus, tasks
 from discord.ext.commands.cog import Cog
 from discord.ext.commands.context import Context
+from discord.ext.menus.views import ViewMenuPages
 from utils import Levelling, generate_placard
 
 if TYPE_CHECKING:
@@ -85,6 +86,9 @@ class RankHandler(commands.Cog, name="Ranks"):
         if message.author == self.bot.user or message.author.bot:
             return
 
+        if message.channel.id in self.bot.blacklist:
+            return
+
         bucket = self._cd.get_bucket(message)
         retry_after = bucket.update_rate_limit()
         if retry_after:
@@ -118,6 +122,9 @@ class RankHandler(commands.Cog, name="Ranks"):
 
     @commands.command()
     async def rank(self, ctx: commands.Context, *, member: discord.Member = None):
+        """
+        Get a user's rank placard
+        """
         member = member or ctx.author
 
         file = await generate_placard(member, self.bot.xp.get(member.id, 0), self.bot)
@@ -126,7 +133,8 @@ class RankHandler(commands.Cog, name="Ranks"):
 
     @commands.command(aliases= ["lb"])
     async def leaderboard(self, ctx: Context):
-        await menus.MenuPages(source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)).start(ctx)
+        """Return the leaderboard, with interactive pagination."""
+        await ViewMenuPages(source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)).start(ctx)
 
 def setup(bot):
     bot.add_cog(RankHandler(bot))

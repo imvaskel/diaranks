@@ -12,7 +12,7 @@ def generate_placard(member: discord.Member, xp: int, bot: Bot, *, bg: str = '')
 
     args = {
         'bg_image': bg,
-        'profile_image': str(member.avatar_url_as(format='png')),
+        'profile_image': member.avatar.with_format("png"),
         'level': level,
         'current_xp': 0,
         'user_xp': remaining_xp,
