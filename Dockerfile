@@ -1,9 +1,11 @@
-FROM python:3.9.5-slim-buster
+FROM python:3.9
 LABEL maintainer="vaskel <contact@vaskel.xyz>"
-RUN apt update && apt-get install gcc git -y && pip install --upgrade pip setuptools wheel
+RUN apt-get update \
+    && apt-get install gcc git -y \
+    && pip install --upgrade pip setuptools wheel poetry
 WORKDIR /src/
-COPY requirements.txt ./
-RUN pip install -r requirements.txt --ignore-installed
+COPY poetry.lock pyproject.toml /src/
 COPY . .
-RUN chmod +x wait-for-it.sh
-CMD ["python", "bot.py"]
+RUN poetry install \
+    && chmod +x wait-for-it.sh
+CMD ["poetry", "run", "python", "bot.py"]

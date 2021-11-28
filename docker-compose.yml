@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 services:
     postgres:
         restart: unless-stopped
@@ -6,7 +6,7 @@ services:
             context: ./db
             dockerfile: Dockerfile
         volumes:
-            - type: volumes
+            - type: volume
               source: bot-db
               target: /var/lib/postgresql/data
         environment:
@@ -18,8 +18,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        command: ["./wait-for-it.sh", "postgres:5432", "--", "python", "bot.py"]
+        command: ["./wait-for-it.sh", "postgres:5432", "--", "poetry", "run", "python", "bot.py"]
         env_file:
             - .env
 volumes:
-    bot-db:
+    bot-db: null
