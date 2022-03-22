@@ -15,6 +15,7 @@ from utils import Levelling, generate_placard
 if TYPE_CHECKING:
     from utils import Bot
 
+
 class LeaderboardSource(menus.ListPageSource):
     def __init__(self, data, bot: Bot) -> None:
         super().__init__(data, per_page=10)
@@ -25,7 +26,7 @@ class LeaderboardSource(menus.ListPageSource):
 
         leaderboard = ""
 
-        for rank, info in enumerate(entries, start = offset):
+        for rank, info in enumerate(entries, start=offset):
             user, xp = info
 
             leaderboard += f"{rank+1}. {self.bot.get_user(user)} XP: {xp}\n"
@@ -38,7 +39,9 @@ class RankHandler(commands.Cog, name="Ranks"):
         self.bot = bot
 
         config = self.bot.config["ranks"]
-        self._cd = commands.CooldownMapping.from_cooldown(1.0, config["cooldown"], commands.BucketType.member) # Cooldown handler
+        self._cd = commands.CooldownMapping.from_cooldown(
+            1.0, config["cooldown"], commands.BucketType.member
+        )  # Cooldown handler
         self._min: int = config["min"]
         self._max: int = config["max"]
         self._id: int = config["id"]
@@ -56,29 +59,30 @@ class RankHandler(commands.Cog, name="Ranks"):
         await self.bot.wait_until_ready()
 
         async with self.bot.db.acquire() as conn:
-            for entry in self.bot.xp.items():
-                id, xp = entry
-                await conn.execute((
-                    "INSERT INTO levels(id, xp) VALUES($1, $2)"
+
+            await conn.executemany(
+                (
+                    "INSERT INTO LEVELS(id, xp) VALUES($1, $2)"
                     "ON CONFLICT (id) DO UPDATE SET xp = $2"
-                    ), id, xp
-                )
+                ),
+                self.bot.xp.items(),
+            )
 
         self._logger.debug(f"Updated Database info for {len(self.bot.xp)} users")
 
-    @Cog.listener('on_level_up')
+    @Cog.listener("on_level_up")
     async def on_level_up(self, user: discord.Member):
         level = Levelling.get_level_from_xp(self.bot.xp[user.id])
 
         try:
             role_id = self.bot.roles[level]
         except KeyError:
-            return # Level doesn't have a role bound to it, so return.
+            return  # Level doesn't have a role bound to it, so return.
 
         await user.add_roles(user.guild.get_role(role_id), reason=f"User levelled up.")
         self._logger.debug(f"Gave user {user} role for level {level}.")
 
-    @Cog.listener('on_message')
+    @Cog.listener("on_message")
     async def add_xp(self, message: discord.Message):
 
         if not message.guild or message.guild.id != self._id:
@@ -93,7 +97,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         bucket = self._cd.get_bucket(message)
         retry_after = bucket.update_rate_limit()
         if retry_after:
-            return # User is on cooldown.
+            return  # User is on cooldown.
 
         xp = randint(self._min, self._max)
 
@@ -103,7 +107,7 @@ class RankHandler(commands.Cog, name="Ranks"):
             level = Levelling.get_level_from_xp(self.bot.xp[member.id])
             self.bot.xp[member.id] += xp
         except KeyError:
-            level = 0 # User doesn't exist, so give them level 0 for checking
+            level = 0  # User doesn't exist, so give them level 0 for checking
             self.bot.xp[member.id] = xp
 
         if level < Levelling.get_level_from_xp(self.bot.xp[member.id]):
@@ -116,7 +120,9 @@ class RankHandler(commands.Cog, name="Ranks"):
         if member.guild.id != self._id:
             return
 
-        await self.bot.db.execute("INSERT INTO levels(id) VALUES($1) ON CONFLICT DO NOTHING", member.id)
+        await self.bot.db.execute(
+            "INSERT INTO levels(id) VALUES($1) ON CONFLICT DO NOTHING", member.id
+        )
 
         if member.id not in self.bot.xp:
             self.bot.xp[member.id] = 0
@@ -132,10 +138,13 @@ class RankHandler(commands.Cog, name="Ranks"):
 
         await ctx.send(file=file)
 
-    @commands.command(aliases= ["lb"])
+    @commands.command(aliases=["lb"])
     async def leaderboard(self, ctx: Context):
         """Return the leaderboard, with interactive pagination."""
-        await ViewMenuPages(source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)).start(ctx)
+        await ViewMenuPages(
+            source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)
+        ).start(ctx)
+
 
 async def setup(bot):
     await bot.add_cog(RankHandler(bot))

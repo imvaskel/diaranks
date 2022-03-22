@@ -8,6 +8,7 @@ from discord.ext import commands
 if TYPE_CHECKING:
     from utils import Bot
 
+
 class Misc(commands.Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -26,6 +27,7 @@ class Misc(commands.Cog):
     async def uptime(self, ctx: commands.Context):
         """Returns the uptime in a fancy discord format"""
         await ctx.send(discord.utils.format_dt(self.bot.start_time, style="R"))
+
 
 async def setup(bot):
     await bot.add_cog(Misc(bot))

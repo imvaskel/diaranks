@@ -12,20 +12,21 @@ if TYPE_CHECKING:
     from discord.ext.commands.cog import Cog
     from discord.ext.commands.core import Command, Group
 
+
 class HelpPaginator(ViewMenuPages):
     def __init__(self, source, **kwargs):
         super().__init__(source, **kwargs)
+
 
 class BotHelpSource(menus.ListPageSource):
     def __init__(self, entries, *, per_page=4):
         super().__init__(entries, per_page=per_page)
 
-    async def format_page(self, menu: menus.Menu, entries: List[Tuple[Cog, List[Command]]]):
+    async def format_page(
+        self, menu: menus.Menu, entries: List[Tuple[Cog, List[Command]]]
+    ):
 
-        embed = discord.Embed(
-                color=0x2F3136 ,
-                title="Help"
-            )
+        embed = discord.Embed(color=0x2F3136, title="Help")
 
         if self.get_max_pages() > 0:
 
@@ -36,10 +37,12 @@ class BotHelpSource(menus.ListPageSource):
         for cog, commands in entries:
 
             embed.add_field(
-                name=cog.qualified_name, value = "".join(f" `{cmd.name}`" for cmd in commands)
+                name=cog.qualified_name,
+                value="".join(f" `{cmd.name}`" for cmd in commands),
             )
 
         return embed
+
 
 class GroupHelpSource(menus.ListPageSource):
     def __init__(self, entries, *, per_page=5, group: Group):
@@ -48,10 +51,7 @@ class GroupHelpSource(menus.ListPageSource):
 
     async def format_page(self, menu: menus.Menu, page: List[Command]):
 
-        embed = discord.Embed(
-                color=0x2F3136 ,
-                title=f"Help for `{self.group.name}`"
-            )
+        embed = discord.Embed(color=0x2F3136, title=f"Help for `{self.group.name}`")
 
         if self.get_max_pages() > 0:
 
@@ -66,11 +66,10 @@ class GroupHelpSource(menus.ListPageSource):
                 f"{command.help or 'No Help'}"
             )
 
-            embed.add_field(
-                name=command.name, value=value
-            )
+            embed.add_field(name=command.name, value=value)
 
         return embed
+
 
 class CogHelpSource(menus.ListPageSource):
     def __init__(self, entries, *, per_page=5, cog: Cog):
@@ -80,9 +79,8 @@ class CogHelpSource(menus.ListPageSource):
     async def format_page(self, menu: menus.Menu, page: List[Command]):
 
         embed = discord.Embed(
-                color=0x2F3136 ,
-                title=f"Help for `{self.cog.qualified_name}`"
-            )
+            color=0x2F3136, title=f"Help for `{self.cog.qualified_name}`"
+        )
 
         if self.get_max_pages() > 0:
 
@@ -97,17 +95,15 @@ class CogHelpSource(menus.ListPageSource):
                 f"{command.help or 'No Help'}"
             )
 
-            embed.add_field(
-                name=command.name, value=value
-            )
+            embed.add_field(name=command.name, value=value)
 
         return embed
+
+
 class CustomHelp(commands.HelpCommand):
     def __init__(self, **options):
 
-        attrs = {
-            "hidden": True
-        }
+        attrs = {"hidden": True}
 
         super().__init__(command_attrs=attrs, **options)
 
@@ -129,8 +125,10 @@ class CustomHelp(commands.HelpCommand):
 
         filtered = await self.filter_commands(group.commands)
 
-        if not filtered: # no unfiltered commands, so don't start the menu
-            return await self.get_destination().send("Command not found. You may not have the proper permissions to see the command.") 
+        if not filtered:  # no unfiltered commands, so don't start the menu
+            return await self.get_destination().send(
+                "Command not found. You may not have the proper permissions to see the command."
+            )
 
         menu = HelpPaginator(GroupHelpSource(filtered, group=group))
         await menu.start(self.context)
@@ -138,8 +136,10 @@ class CustomHelp(commands.HelpCommand):
     async def send_cog_help(self, cog: Cog):
         filtered = await self.filter_commands(cog.get_commands())
 
-        if not filtered: # no unfiltered commands, so don't start the menu
-            return await self.get_destination().send("Command not found. You may not have the proper permissions to see the command.") 
+        if not filtered:  # no unfiltered commands, so don't start the menu
+            return await self.get_destination().send(
+                "Command not found. You may not have the proper permissions to see the command."
+            )
 
         menu = HelpPaginator(CogHelpSource(filtered, cog=cog))
         await menu.start(self.context)
@@ -149,22 +149,24 @@ class CustomHelp(commands.HelpCommand):
         if not await self.filter_commands([command]):
             return
 
-        embed = discord.Embed(
-            title=f"Help for {command.name}", color=0x2F3136 
-            )
+        embed = discord.Embed(title=f"Help for {command.name}", color=0x2F3136)
 
         embed.add_field(
             name="Help", value=command.help or "No Help", inline=False
         ).add_field(
-            name="Aliases", value=" ".join(f"`{alias}`" for alias in command.aliases) or "None", inline=False
+            name="Aliases",
+            value=" ".join(f"`{alias}`" for alias in command.aliases) or "None",
+            inline=False,
         ).add_field(
             name="Arguments", value=command.signature or "None"
         )
 
         await self.get_destination().send(embed=embed)
 
+
 async def setup(bot: Bot):
     bot.help_command = CustomHelp()
+
 
 async def teardoown(bot: Bot):
     bot.help_command = commands.DefaultHelpCommand()

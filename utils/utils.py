@@ -4,12 +4,10 @@ from discord.components import Button
 from discord.enums import ButtonStyle
 from discord.interactions import Interaction
 
-__all__ = (
-    "traceback_maker",
-    "Confirm"
-)
+__all__ = ("traceback_maker", "Confirm")
 
 import traceback
+
 
 def traceback_maker(exc: Exception) -> str:
     etype = type(exc)
@@ -18,6 +16,7 @@ def traceback_maker(exc: Exception) -> str:
     lines = traceback.format_exception(etype, exc, trace)
 
     return "".join(lines)
+
 
 class Confirm(discord.ui.View):
     def __init__(self, timeout: Optional[float] = 180, *, member: discord.Member):
@@ -33,7 +32,9 @@ class Confirm(discord.ui.View):
     async def interaction_check(self, interaction: Interaction) -> bool:
         if interaction.user == self.member:
             return True
-        await interaction.response.send_message("This is not your button.", ephemeral=True)
+        await interaction.response.send_message(
+            "This is not your button.", ephemeral=True
+        )
         return False
 
     @discord.ui.button(label="Yes", style=ButtonStyle.green)

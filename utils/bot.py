@@ -24,29 +24,33 @@ class Bot(commands.Bot):
             activity = discord.Game(name=activity["text"])
         else:
             activity = discord.Activity(
-                type = getattr(discord.ActivityType, activity["type"], discord.ActivityType.watching),
-                name = activity["text"]
+                type=getattr(
+                    discord.ActivityType,
+                    activity["type"],
+                    discord.ActivityType.watching,
+                ),
+                name=activity["text"],
             )
 
         super().__init__(
             **self.config.get("bot").get("config"),
-            activity = activity,
-            allowed_mentions=discord.AllowedMentions(**self.config["bot"]["allowed_mentions"]),
-            intents=discord.Intents.all()
+            activity=activity,
+            allowed_mentions=discord.AllowedMentions(
+                **self.config["bot"]["allowed_mentions"]
+            ),
+            intents=discord.Intents.all(),
         )
 
-        self.roles: Dict[int, int] = {} # Level, Role ID
-        self.xp: Dict[int, int] = {} # User ID, XP
-        self.blacklist: List[int] = [] # list of blacklisted channel ids
+        self.roles: Dict[int, int] = {}  # Level, Role ID
+        self.xp: Dict[int, int] = {}  # User ID, XP
+        self.blacklist: List[int] = []  # list of blacklisted channel ids
 
         self._configure_logging()
 
         self.error_color = discord.Color.red()
 
     async def _ainit(self) -> None:
-        self.db = await asyncpg.create_pool(
-            **self.config.get("bot").get("database")
-        )
+        self.db = await asyncpg.create_pool(**self.config.get("bot").get("database"))
 
         rows = await self.db.fetch("SELECT * FROM levels")
 
@@ -72,7 +76,9 @@ class Bot(commands.Bot):
                 await self.load_extension(extension)
                 self.logger.info(f"Loaded extension {extension}")
             except ExtensionError as e:
-                self.logger.error(f"Failed to load extension {extension} \n{e}", exc_info=True)
+                self.logger.error(
+                    f"Failed to load extension {extension} \n{e}", exc_info=True
+                )
 
     async def setup_hook(self) -> None:
         await self._ainit()
@@ -100,10 +106,10 @@ class Bot(commands.Bot):
         return await super().on_message(message)
 
     def get_sorted_leaderboard(self) -> list[tuple[int, int]]:
-        sorted_d = dict(sorted(self.xp.items(), key=operator.itemgetter(1), reverse=True))
-        return [
-            (i, self.xp[i]) for i in sorted_d
-        ]
+        sorted_d = dict(
+            sorted(self.xp.items(), key=operator.itemgetter(1), reverse=True)
+        )
+        return [(i, self.xp[i]) for i in sorted_d]
 
     def get_user_position(self, user: Union[int, discord.User]) -> int:
         if isinstance(user, discord.User):
@@ -117,4 +123,3 @@ class Bot(commands.Bot):
             if id == user:
                 return index + 1
         return 0
-

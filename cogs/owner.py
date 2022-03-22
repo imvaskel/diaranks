@@ -15,11 +15,15 @@ if TYPE_CHECKING:
     from discord.interactions import Interaction
     from utils.bot import Bot
 
-NEWLINE = "\n" # Why f-strings
+NEWLINE = "\n"  # Why f-strings
 
-class CleanupFlags(commands.FlagConverter, prefix="/", delimiter="", case_insensitive=True):
+
+class CleanupFlags(
+    commands.FlagConverter, prefix="/", delimiter="", case_insensitive=True
+):
     num: int = 5
     bulk: bool = False
+
 
 class CogSelectView(discord.ui.View):
     def __init__(self, *, timeout: Optional[float] = 180, bot: Bot):
@@ -28,9 +32,12 @@ class CogSelectView(discord.ui.View):
 
     async def interaction_check(self, interaction: Interaction) -> bool:
         if interaction.user.id not in self.bot.owner_ids:
-            await interaction.response.send_message("You do not own this bot!", ephemeral=True)
+            await interaction.response.send_message(
+                "You do not own this bot!", ephemeral=True
+            )
             return False
         return True
+
 
 class CogSelect(discord.ui.Select):
 
@@ -38,12 +45,12 @@ class CogSelect(discord.ui.Select):
         view: CogSelectView
 
     def __init__(self, options: List[Cog]):
-        options = [SelectOption(label = i.__module__, value = i.__module__) for i in options]
+        options = [
+            SelectOption(label=i.__module__, value=i.__module__) for i in options
+        ]
 
         super().__init__(
-            placeholder="Pick a cog",
-            options = options,
-            max_values = len(options)
+            placeholder="Pick a cog", options=options, max_values=len(options)
         )
 
     async def callback(self, interaction: Interaction):
@@ -53,9 +60,13 @@ class CogSelect(discord.ui.Select):
             try:
                 self.view.bot.reload_extension(cog)
             except ExtensionError as e:
-                await followup.send(f"Failed to reload `{cog}`: \n```py\n{utils.traceback_maker(e)}```", ephemeral=True)
+                await followup.send(
+                    f"Failed to reload `{cog}`: \n```py\n{utils.traceback_maker(e)}```",
+                    ephemeral=True,
+                )
             else:
                 await followup.send(f"Reloaded cog `{cog}`", ephemeral=True)
+
 
 class OwnerCog(commands.Cog, name="owner"):
     """
@@ -75,9 +86,10 @@ class OwnerCog(commands.Cog, name="owner"):
     @commands.is_owner()
     async def reload(self, ctx: commands.Context):
         view = CogSelectView(bot=ctx.bot)
-        view.add_item(CogSelect([
-            i for i in ctx.bot.cogs.values() if i.__module__ != "jishaku.cog"
-            ])
+        view.add_item(
+            CogSelect(
+                [i for i in ctx.bot.cogs.values() if i.__module__ != "jishaku.cog"]
+            )
         )
 
         await ctx.send("Reload Cogs", view=view)
@@ -85,16 +97,26 @@ class OwnerCog(commands.Cog, name="owner"):
     @dev_group.command()
     @commands.is_owner()
     async def cleanup(self, ctx: commands.Context, *, flags: CleanupFlags):
-        num = len(await ctx.channel.purge(limit = flags.num+1, check = lambda m: m.author == ctx.bot.user, bulk = flags.bulk))
+        num = len(
+            await ctx.channel.purge(
+                limit=flags.num + 1,
+                check=lambda m: m.author == ctx.bot.user,
+                bulk=flags.bulk,
+            )
+        )
 
         await ctx.reply(
-            embed = discord.Embed(description=f"\N{THUMBS UP SIGN} Successfully deleted {num}/{flags.num} messages"),
-            delete_after=25
+            embed=discord.Embed(
+                description=f"\N{THUMBS UP SIGN} Successfully deleted {num}/{flags.num} messages"
+            ),
+            delete_after=25,
         )
 
     @dev_group.command()
     @commands.is_owner()
-    async def delete(self, ctx: commands.Context, message: discord.PartialMessage = None):
+    async def delete(
+        self, ctx: commands.Context, message: discord.PartialMessage = None
+    ):
         """
         Deletes the given message, can also be a reply.
         """
@@ -110,7 +132,7 @@ class OwnerCog(commands.Cog, name="owner"):
         except Exception as error:
             embed = discord.Embed(description=f"```py\n{error}```")
             await ctx.reply(embed=embed)
-    
+
     @dev_group.command(aliases=["shutdown"])
     async def restart(self, ctx: commands.Context):
         view = utils.Confirm(member=ctx.author)

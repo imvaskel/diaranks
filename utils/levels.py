@@ -1,5 +1,4 @@
 class Levelling:
-
     @staticmethod
     def get_level_xp(n):
         return 5 * (n ** 2) + 50 * n + 100
@@ -16,7 +15,7 @@ class Levelling:
     @staticmethod
     def get_xp_for_level(level):
         xp = 0
-        for i in range(level+1):
+        for i in range(level + 1):
             xp += Levelling.get_level_xp(i)
         return xp
 

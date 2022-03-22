@@ -9,6 +9,7 @@ from discord.ext.commands.context import Context
 if TYPE_CHECKING:
     from utils import Bot
 
+
 class ManagementCog(commands.Cog, name="Management"):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -42,17 +43,23 @@ class ManagementCog(commands.Cog, name="Management"):
         You cannot have multiple roles bound to a single level.
         """
         if level in self.bot.roles.keys():
-            raise commands.BadArgument("Level cannot already have a role, please use `levels remove <level>` to remove it and try again.")
+            raise commands.BadArgument(
+                "Level cannot already have a role, please use `levels remove <level>` to remove it and try again."
+            )
 
-        row = await self.bot.db.fetchone((
-                "INSERT INTO roles(level, id) VALUES($1, $2)"
-                "RETURNING *"
-            ), level, role.id
+        row = await self.bot.db.fetchone(
+            ("INSERT INTO roles(level, id) VALUES($1, $2)" "RETURNING *"),
+            level,
+            role.id,
         )
 
         self.bot.roles[row["level"]] = row["id"]
 
-        await ctx.reply(embed=discord.Embed(description=f"Successfully set level `**{level}**` to give role {role.mention}."))
+        await ctx.reply(
+            embed=discord.Embed(
+                description=f"Successfully set level `**{level}**` to give role {role.mention}."
+            )
+        )
 
     @commands.has_guild_permissions(manage_guild=True)
     @levels_group.command(name="remove")
@@ -63,13 +70,15 @@ class ManagementCog(commands.Cog, name="Management"):
         if level not in self.bot.roles.keys():
             raise commands.BadArgument("That level has no role bound to it.")
 
-        await self.bot.db.execute(
-            "DELETE FROM roles WHERE level = $1", level
-        )
+        await self.bot.db.execute("DELETE FROM roles WHERE level = $1", level)
 
         self.bot.roles.pop(level, None)
 
-        await ctx.send(embed=discord.Embed(description=f"Successfully removed the role given for level ``**{level}**``"))
+        await ctx.send(
+            embed=discord.Embed(
+                description=f"Successfully removed the role given for level ``**{level}**``"
+            )
+        )
 
     @commands.has_guild_permissions(manage_guild=True)
     @commands.group(name="blacklist")
@@ -100,7 +109,9 @@ class ManagementCog(commands.Cog, name="Management"):
 
     @commands.has_guild_permissions(manage_guild=True)
     @blacklist_group.command(name="remove")
-    async def remove_channel(self, ctx: commands.Context, *, channel: discord.TextChannel):
+    async def remove_channel(
+        self, ctx: commands.Context, *, channel: discord.TextChannel
+    ):
         """
         Remove a channel from the blacklist.
         """
@@ -108,12 +119,10 @@ class ManagementCog(commands.Cog, name="Management"):
             raise commands.BadArgument("This channel is not blacklisted.")
 
         async with self.bot.db.acquire() as conn:
-            await conn.execute(
-                "DELETE FROM blacklist WHERE id = $1", channel.id
-            )
+            await conn.execute("DELETE FROM blacklist WHERE id = $1", channel.id)
 
             self.bot.blacklist.remove(channel.id)
-        
+
         await ctx.message.add_reaction("\U00002705")
 
     @blacklist_group.command(name="list")
@@ -121,7 +130,16 @@ class ManagementCog(commands.Cog, name="Management"):
         """
         List blacklisted channels
         """
-        await ctx.send(embed=discord.Embed(description="\n".join(f"``{ctx.guild.get_channel(channel)}``" for channel in self.bot.blacklist) or "None"))
+        await ctx.send(
+            embed=discord.Embed(
+                description="\n".join(
+                    f"``{ctx.guild.get_channel(channel)}``"
+                    for channel in self.bot.blacklist
+                )
+                or "None"
+            )
+        )
+
 
 async def setup(bot):
     await bot.add_cog(ManagementCog(bot))
