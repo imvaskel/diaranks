@@ -8,7 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.9"
 aiohttp = "3.7.4.post0"
-jishaku = "^2.3.2"
+jishaku = {git = "https://github.com/Gorialis/jishaku"}
 asyncpg = "^0.25.0"
 requests = "^2.26.0"
 psutil = "^5.8.0"
