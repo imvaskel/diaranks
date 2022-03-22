@@ -1,19 +1,20 @@
 from datetime import datetime
 import logging
 import operator
-import os
-from typing import Dict, List, Union, Optional
+from typing import Any, Dict, List, Union, Optional
 
 import asyncpg
 import discord
-import toml
+import yaml
 from discord.ext import commands
 from discord.ext.commands.errors import ExtensionError
 
 
 class Bot(commands.Bot):
     def __init__(self) -> None:
-        self.config = toml.load("./config.toml")
+        with open("./config.yaml") as fs:
+            self.config: dict = yaml.load(fs, Loader=yaml.Loader)
+
         self.logger = logging.getLogger(__name__)
         self.start_time = datetime.now()
 
@@ -37,10 +38,8 @@ class Bot(commands.Bot):
         self.roles: Dict[int, int] = {} # Level, Role ID
         self.xp: Dict[int, int] = {} # User ID, XP
         self.blacklist: List[int] = [] # list of blacklisted channel ids
-        self.loop.run_until_complete(self._ainit())
 
         self._configure_logging()
-        self._load_extensions()
 
         self.error_color = discord.Color.red()
 
@@ -67,13 +66,17 @@ class Bot(commands.Bot):
             for row in rows:
                 self.blacklist.append(row["id"])
 
-    def _load_extensions(self) -> None:
+    async def _load_extensions(self) -> None:
         for extension in self.config["bot"]["extensions"]:
             try:
-                self.load_extension(extension)
+                await self.load_extension(extension)
                 self.logger.info(f"Loaded extension {extension}")
             except ExtensionError as e:
                 self.logger.error(f"Failed to load extension {extension} \n{e}", exc_info=True)
+
+    async def setup_hook(self) -> None:
+        await self._ainit()
+        await self._load_extensions()
 
     def _configure_logging(self) -> None:
         config = self.config["bot"]["logging"]
@@ -86,6 +89,9 @@ class Bot(commands.Bot):
 
     def run(self, token=None) -> None:
         return super().run(token or self.config["bot"]["token"])
+
+    async def start(self, token=None) -> None:
+        return await super().start(token or self.config["bot"]["token"])
 
     async def on_message(self, message: discord.Message) -> None:
         if message.guild is None or message.author.bot:

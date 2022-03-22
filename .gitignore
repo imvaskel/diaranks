@@ -142,3 +142,4 @@ cython_debug/
 .env
 config.toml
 dump.sql
+config.yaml

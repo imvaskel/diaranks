@@ -1,0 +1,35 @@
+ranks:
+  cooldown: 60
+  min: 5
+  max: 10
+  id: 0
+bot:
+  token: ''
+  extensions:
+    - jishaku
+    - utils.help
+    - cogs.ranks
+    - cogs.errors
+    - cogs.management
+    - cogs.owner
+  allowed_mentions:
+    roles: false
+    everyone: false
+    users: false
+    replied_user: false
+  config:
+    command_prefix: ''
+    owner_ids: []
+    description: ''
+  activity:
+    type: ''
+    text: ''
+  logging:
+    level: INFO
+    format: '[%(asctime)s] [%(levelname)s] %(name)s: %(message)s'
+  database:
+    # keep default and set password if using docker.
+    host: postgres
+    port: 5432
+    user: postgres
+    password: ''

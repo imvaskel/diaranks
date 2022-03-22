@@ -45,9 +45,10 @@ class RankHandler(commands.Cog, name="Ranks"):
 
         self._logger = logging.getLogger(__name__)
 
+    async def cog_load(self) -> None:
         self.update_db.start()
 
-    def cog_unload(self) -> None:
+    async def cog_unload(self) -> None:
         self.update_db.cancel()
 
     @tasks.loop(minutes=5)
