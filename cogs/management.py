@@ -123,5 +123,5 @@ class ManagementCog(commands.Cog, name="Management"):
         """
         await ctx.send(embed=discord.Embed(description="\n".join(f"``{ctx.guild.get_channel(channel)}``" for channel in self.bot.blacklist) or "None"))
 
-def setup(bot):
-    bot.add_cog(ManagementCog(bot))
+async def setup(bot):
+    await bot.add_cog(ManagementCog(bot))

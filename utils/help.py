@@ -163,8 +163,8 @@ class CustomHelp(commands.HelpCommand):
 
         await self.get_destination().send(embed=embed)
 
-def setup(bot: Bot):
+async def setup(bot: Bot):
     bot.help_command = CustomHelp()
 
-def teardoown(bot: Bot):
+async def teardoown(bot: Bot):
     bot.help_command = commands.DefaultHelpCommand()

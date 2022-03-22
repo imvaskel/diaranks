@@ -27,5 +27,5 @@ class Misc(commands.Cog):
         """Returns the uptime in a fancy discord format"""
         await ctx.send(discord.utils.format_dt(self.bot.start_time, style="R"))
 
-def setup(bot):
-    bot.add_cog(Misc(bot))
+async def setup(bot):
+    await bot.add_cog(Misc(bot))

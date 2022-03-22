@@ -137,5 +137,5 @@ class RankHandler(commands.Cog, name="Ranks"):
         """Return the leaderboard, with interactive pagination."""
         await ViewMenuPages(source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)).start(ctx)
 
-def setup(bot):
-    bot.add_cog(RankHandler(bot))
+async def setup(bot):
+    await bot.add_cog(RankHandler(bot))

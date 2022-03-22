@@ -121,5 +121,5 @@ class OwnerCog(commands.Cog, name="owner"):
             await self.bot.close()
 
 
-def setup(bot: Bot):
-    bot.add_cog(OwnerCog(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(OwnerCog(bot))

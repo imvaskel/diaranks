@@ -41,5 +41,5 @@ class ErrorHandler(commands.Cog):
             await ctx.reply(embed=embed)
             self._logger.error(''.join(traceback.format_tb(error.__traceback__)))
 
-def setup(bot: Bot):
-    bot.add_cog(ErrorHandler(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(ErrorHandler(bot))
