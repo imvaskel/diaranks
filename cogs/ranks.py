@@ -127,7 +127,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         if member.id not in self.bot.xp:
             self.bot.xp[member.id] = 0
 
-    @commands.command()
+    @commands.hybrid_command()
     async def rank(
         self,
         ctx: commands.Context,
@@ -143,7 +143,7 @@ class RankHandler(commands.Cog, name="Ranks"):
 
         await ctx.send(file=file)
 
-    @commands.command(aliases=["lb"])
+    @commands.hybrid_command(aliases=["lb"])
     async def leaderboard(self, ctx: Context):
         """Return the leaderboard, with interactive pagination."""
         await ViewMenuPages(
