@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, Optional, cast
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
 import discord
 from discord.components import Button
 from discord.enums import ButtonStyle
