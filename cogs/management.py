@@ -143,4 +143,4 @@ class ManagementCog(commands.Cog, name="Management"):
 
 
 async def setup(bot: Bot):
-    await bot.add_cog(ManagementCog(bot), guild=discord.Object(bot.config["bot"]["id"]))
+    await bot.add_cog(ManagementCog(bot))

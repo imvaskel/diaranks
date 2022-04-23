@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Optional
 
 import discord
 import utils
@@ -9,7 +9,7 @@ from discord.ext import commands
 from discord.ext.commands.errors import ExtensionError
 
 if TYPE_CHECKING:
-    from typing import List, Optional
+    from typing import List
 
     from discord.ext.commands.cog import Cog
     from discord.interactions import Interaction
@@ -112,29 +112,6 @@ class OwnerCog(commands.Cog, name="owner"):
             delete_after=25,
         )
 
-    @dev_group.command()
-    @commands.is_owner()
-    async def delete(
-        self, ctx: commands.Context, message: Optional[discord.PartialMessage] = None
-    ):
-        """
-        Deletes the given message, can also be a reply.
-        """
-        if not message:
-            if ctx.message.reference and ctx.message.reference.cached_message:
-                message = ctx.message.reference.cached_message
-            else:
-                raise commands.BadArgument(
-                    "No message given or the message is not cached."
-                )
-
-        try:
-            await message.delete()
-            await ctx.message.add_reaction("\N{THUMBS UP SIGN}")
-        except Exception as error:
-            embed = discord.Embed(description=f"```py\n{error}```")
-            await ctx.reply(embed=embed)
-
     @dev_group.command(aliases=["shutdown"])
     @commands.is_owner()
     async def restart(self, ctx: commands.Context):
@@ -175,4 +152,4 @@ class OwnerCog(commands.Cog, name="owner"):
 
 
 async def setup(bot: Bot):
-    await bot.add_cog(OwnerCog(bot), guild=discord.Object(id=bot.config["bot"]["id"]))
+    await bot.add_cog(OwnerCog(bot))
