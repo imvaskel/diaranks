@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import discord
 import utils
@@ -136,6 +136,7 @@ class OwnerCog(commands.Cog, name="owner"):
             await ctx.reply(embed=embed)
 
     @dev_group.command(aliases=["shutdown"])
+    @commands.is_owner()
     async def restart(self, ctx: commands.Context):
         view = utils.Confirm(member=ctx.author)
         await ctx.send("Are you sure?", view=view)
@@ -143,6 +144,34 @@ class OwnerCog(commands.Cog, name="owner"):
 
         if view.confirm:
             await self.bot.close()
+
+    @dev_group.command()
+    @commands.is_owner()
+    async def sync(
+        self,
+        ctx: commands.Context,
+        guilds: commands.Greedy[discord.Object],
+        spec: Optional[Literal["~"]] = None,
+    ) -> None:
+        # thank you umbra
+        if not guilds:
+            if spec == "~":
+                fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+            else:
+                fmt = await ctx.bot.tree.sync()
+            await ctx.send(
+                f"Synced {len(fmt)} commands {'globally' if spec is None else 'to the current guild.'}"
+            )
+            return
+        fmt = 0
+        for guild in guilds:
+            try:
+                await ctx.bot.tree.sync(guild=guild)
+            except discord.HTTPException:
+                pass
+            else:
+                fmt += 1
+        await ctx.send(f"Synced the tree to {fmt}/{len(guilds)} guilds.")
 
 
 async def setup(bot: Bot):
