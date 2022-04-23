@@ -44,9 +44,9 @@ class CogSelect(discord.ui.Select):
     if TYPE_CHECKING:
         view: CogSelectView
 
-    def __init__(self, options: List[Cog]):
-        options = [
-            SelectOption(label=i.__module__, value=i.__module__) for i in options
+    def __init__(self, cogs: List[Cog]):
+        options: list[SelectOption] = [
+            SelectOption(label=i.__module__, value=i.__module__) for i in cogs
         ]
 
         super().__init__(
@@ -58,7 +58,7 @@ class CogSelect(discord.ui.Select):
         followup = interaction.followup
         for cog in self.values:
             try:
-                self.view.bot.reload_extension(cog)
+                await self.view.bot.reload_extension(cog)
             except ExtensionError as e:
                 await followup.send(
                     f"Failed to reload `{cog}`: \n```py\n{utils.traceback_maker(e)}```",
@@ -77,7 +77,7 @@ class OwnerCog(commands.Cog, name="owner"):
         self.bot = bot
 
     @commands.is_owner()
-    @commands.group(name="dev")
+    @commands.hybrid_group(name="dev")
     async def dev_group(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
@@ -115,16 +115,18 @@ class OwnerCog(commands.Cog, name="owner"):
     @dev_group.command()
     @commands.is_owner()
     async def delete(
-        self, ctx: commands.Context, message: discord.PartialMessage = None
+        self, ctx: commands.Context, message: Optional[discord.PartialMessage] = None
     ):
         """
         Deletes the given message, can also be a reply.
         """
-        if message is None:
-            if ctx.message.reference:
+        if not message:
+            if ctx.message.reference and ctx.message.reference.cached_message:
                 message = ctx.message.reference.cached_message
             else:
-                raise commands.BadArgument("No message given.")
+                raise commands.BadArgument(
+                    "No message given or the message is not cached."
+                )
 
         try:
             await message.delete()
@@ -144,4 +146,4 @@ class OwnerCog(commands.Cog, name="owner"):
 
 
 async def setup(bot: Bot):
-    await bot.add_cog(OwnerCog(bot))
+    await bot.add_cog(OwnerCog(bot), guild=discord.Object(id=bot.config["bot"]["id"]))

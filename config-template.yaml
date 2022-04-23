@@ -5,6 +5,7 @@ ranks:
   id: 0
 bot:
   token: ''
+  id: 0 # the id to use when syncing app commands
   extensions:
     - jishaku
     - utils.help
@@ -28,7 +29,6 @@ bot:
     level: INFO
     format: '[%(asctime)s] [%(levelname)s] %(name)s: %(message)s'
   database:
-    # keep default and set password if using docker.
     host: postgres
     port: 5432
     user: postgres

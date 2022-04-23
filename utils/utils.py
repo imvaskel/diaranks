@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import TYPE_CHECKING, Optional, cast
 import discord
 from discord.components import Button
 from discord.enums import ButtonStyle
@@ -7,6 +7,9 @@ from discord.interactions import Interaction
 __all__ = ("traceback_maker", "Confirm")
 
 import traceback
+
+if TYPE_CHECKING:
+    from typing import Union
 
 
 def traceback_maker(exc: Exception) -> str:
@@ -19,7 +22,12 @@ def traceback_maker(exc: Exception) -> str:
 
 
 class Confirm(discord.ui.View):
-    def __init__(self, timeout: Optional[float] = 180, *, member: discord.Member):
+    def __init__(
+        self,
+        timeout: Optional[float] = 180,
+        *,
+        member: Union[discord.Member, discord.User]
+    ):
         super().__init__(timeout=timeout)
         self.member = member
 
@@ -38,14 +46,14 @@ class Confirm(discord.ui.View):
         return False
 
     @discord.ui.button(label="Yes", style=ButtonStyle.green)
-    async def yes(self, button: Button, interaction: Interaction) -> None:
+    async def yes(self, interaction: Interaction, button: Button) -> None:
         self.confirm = True
         await interaction.response.send_message("Confirmed.", ephemeral=True)
         await self._disable_children(interaction)
         self.stop()
 
     @discord.ui.button(label="No", style=ButtonStyle.red)
-    async def no(self, button: Button, interaction: Interaction) -> None:
+    async def no(self, interaction: Interaction, button: Button) -> None:
         self.confirm = False
         await interaction.response.send_message("Denied.", ephemeral=True)
         await self._disable_children(interaction)

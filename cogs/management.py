@@ -14,7 +14,7 @@ class ManagementCog(commands.Cog, name="Management"):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    @commands.group(name="levels")
+    @commands.hybrid_group(name="levels")
     async def levels_group(self, ctx: Context):
         """
         The base group for setting up level rewards.
@@ -27,6 +27,7 @@ class ManagementCog(commands.Cog, name="Management"):
         """
         Lists the currently active roles with their levels.
         """
+        assert ctx.guild is not None
         end = ""
 
         for level, id in self.bot.roles.items():
@@ -81,7 +82,7 @@ class ManagementCog(commands.Cog, name="Management"):
         )
 
     @commands.has_guild_permissions(manage_guild=True)
-    @commands.group(name="blacklist")
+    @commands.hybrid_group(name="blacklist")
     async def blacklist_group(self, ctx: commands.Context):
         """
         Base group for the blacklist command.
@@ -141,5 +142,5 @@ class ManagementCog(commands.Cog, name="Management"):
         )
 
 
-async def setup(bot):
-    await bot.add_cog(ManagementCog(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(ManagementCog(bot), guild=discord.Object(bot.config["bot"]["id"]))

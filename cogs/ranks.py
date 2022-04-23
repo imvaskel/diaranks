@@ -10,7 +10,7 @@ from discord.ext import commands, menus, tasks
 from discord.ext.commands.cog import Cog
 from discord.ext.commands.context import Context
 from discord.ext.menus.views import ViewMenuPages
-from utils import Levelling, generate_placard
+from utils import generate_placard, get_level_from_xp
 
 if TYPE_CHECKING:
     from utils import Bot
@@ -26,12 +26,12 @@ class LeaderboardSource(menus.ListPageSource):
 
         leaderboard = ""
 
-        for rank, info in enumerate(entries, start=offset):
+        for rank, info in enumerate(entries, start=offset + 1):
             user, xp = info
 
-            leaderboard += f"{rank+1}. {self.bot.get_user(user)} XP: {xp}\n"
+            leaderboard += f"{rank}. ``{self.bot.get_user(user)}`` XP: ``{xp}``\n"
 
-        return leaderboard
+        return discord.Embed(description=leaderboard)
 
 
 class RankHandler(commands.Cog, name="Ranks"):
@@ -41,7 +41,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         config = self.bot.config["ranks"]
         self._cd = commands.CooldownMapping.from_cooldown(
             1.0, config["cooldown"], commands.BucketType.member
-        )  # Cooldown handler
+        )
         self._min: int = config["min"]
         self._max: int = config["max"]
         self._id: int = config["id"]
@@ -72,7 +72,7 @@ class RankHandler(commands.Cog, name="Ranks"):
 
     @Cog.listener("on_level_up")
     async def on_level_up(self, user: discord.Member):
-        level = Levelling.get_level_from_xp(self.bot.xp[user.id])
+        level = get_level_from_xp(self.bot.xp[user.id])
 
         try:
             role_id = self.bot.roles[level]
@@ -104,13 +104,13 @@ class RankHandler(commands.Cog, name="Ranks"):
         member = message.author
 
         try:
-            level = Levelling.get_level_from_xp(self.bot.xp[member.id])
+            level = get_level_from_xp(self.bot.xp[member.id])
             self.bot.xp[member.id] += xp
         except KeyError:
             level = 0  # User doesn't exist, so give them level 0 for checking
             self.bot.xp[member.id] = xp
 
-        if level < Levelling.get_level_from_xp(self.bot.xp[member.id]):
+        if level < get_level_from_xp(self.bot.xp[member.id]):
             self.bot.dispatch("level_up", user=message.author)
 
         self._logger.debug(f"Rewarded {xp} xp to {member}")
@@ -128,7 +128,12 @@ class RankHandler(commands.Cog, name="Ranks"):
             self.bot.xp[member.id] = 0
 
     @commands.command()
-    async def rank(self, ctx: commands.Context, *, member: discord.Member = None):
+    async def rank(
+        self,
+        ctx: commands.Context,
+        *,
+        member: discord.Member = commands.param(default=lambda ctx: ctx.author),
+    ):
         """
         Get a user's rank placard
         """

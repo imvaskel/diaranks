@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 import operator
-from typing import Any, Dict, List, Union, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Union, Optional
 
 import asyncpg
 import discord
@@ -9,11 +9,17 @@ import yaml
 from discord.ext import commands
 from discord.ext.commands.errors import ExtensionError
 
+from .config import Config
+
 
 class Bot(commands.Bot):
+    if TYPE_CHECKING:
+        owner_ids: list[int]
+        db: asyncpg.Pool
+
     def __init__(self) -> None:
         with open("./config.yaml") as fs:
-            self.config: dict = yaml.load(fs, Loader=yaml.Loader)
+            self.config: Config = yaml.load(fs, Loader=yaml.Loader)
 
         self.logger = logging.getLogger(__name__)
         self.start_time = datetime.now()
@@ -35,9 +41,7 @@ class Bot(commands.Bot):
         super().__init__(
             **self.config.get("bot").get("config"),
             activity=activity,
-            allowed_mentions=discord.AllowedMentions(
-                **self.config["bot"]["allowed_mentions"]
-            ),
+            allowed_mentions=discord.AllowedMentions.none(),
             intents=discord.Intents.all(),
         )
 
@@ -50,25 +54,20 @@ class Bot(commands.Bot):
         self.error_color = discord.Color.red()
 
     async def _ainit(self) -> None:
-        self.db = await asyncpg.create_pool(**self.config.get("bot").get("database"))
+        self.db = await asyncpg.create_pool(**self.config["bot"]["database"])  # type: ignore
+        assert self.db
 
         rows = await self.db.fetch("SELECT * FROM levels")
-
-        if rows:
-            for row in rows:
-                self.xp[row["id"]] = row["xp"]
+        for row in rows:
+            self.xp[row["id"]] = row["xp"]
 
         rows = await self.db.fetch("SELECT * FROM roles")
-
-        if rows:
-            for row in rows:
-                self.roles[row["level"]] = row["id"]
+        for row in rows:
+            self.roles[row["level"]] = row["id"]
 
         rows = await self.db.fetch("SELECT * FROM blacklist")
-
-        if rows:
-            for row in rows:
-                self.blacklist.append(row["id"])
+        for row in rows:
+            self.blacklist.append(row["id"])
 
     async def _load_extensions(self) -> None:
         for extension in self.config["bot"]["extensions"]:
@@ -106,10 +105,7 @@ class Bot(commands.Bot):
         return await super().on_message(message)
 
     def get_sorted_leaderboard(self) -> list[tuple[int, int]]:
-        sorted_d = dict(
-            sorted(self.xp.items(), key=operator.itemgetter(1), reverse=True)
-        )
-        return [(i, self.xp[i]) for i in sorted_d]
+        return sorted(self.xp.items(), key=operator.itemgetter(1), reverse=True)
 
     def get_user_position(self, user: Union[int, discord.User]) -> int:
         if isinstance(user, discord.User):
@@ -117,9 +113,8 @@ class Bot(commands.Bot):
 
         leaderboard = self.get_sorted_leaderboard()
 
-        for index, entry in enumerate(leaderboard):
-            id, _ = entry
-
-            if id == user:
-                return index + 1
-        return 0
+        for index, entry in enumerate(leaderboard, start=1):
+            if entry[0] == user:
+                return index
+        else:
+            return 0
