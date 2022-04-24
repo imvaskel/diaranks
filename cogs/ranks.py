@@ -137,6 +137,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         """
         Get a user's rank placard
         """
+        await ctx.defer()
         member = member or ctx.author
 
         file = await generate_placard(member, self.bot.xp.get(member.id, 0), self.bot)
@@ -146,6 +147,8 @@ class RankHandler(commands.Cog, name="Ranks"):
     @commands.hybrid_command(aliases=["lb"])
     async def leaderboard(self, ctx: Context):
         """Return the leaderboard, with interactive pagination."""
+        await ctx.defer()
+
         await ViewMenuPages(
             source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)
         ).start(ctx)
