@@ -35,7 +35,8 @@ class Generator:
     font_small = ImageFont.truetype(str(ubuntu_b), 22)
 
     @classmethod
-    async def generate(
+    @executor_function
+    def generate(
         cls,
         *,
         user: Member,
@@ -44,13 +45,11 @@ class Generator:
         user_xp: int,
         next_xp: int,
         user_position: int,
+        avatar_bytes: bytes,
     ):
         card = Image.open(cls.background).convert("RGBA")
-        avatar = (
-            Image.open(BytesIO(await user.display_avatar.read()))
-            .convert("RGBA")
-            .resize((200, 200))
-        )
+        avatar = Image.open(BytesIO(avatar_bytes)).convert("RGBA").resize((200, 200))
+
         status = Image.open(cls.presences[user.status]).convert("RGBA").resize((40, 40))
 
         profile_pic_holder = Image.new(
@@ -127,8 +126,6 @@ class Generator:
 
 
 async def generate_placard(member: discord.Member, xp: int, bot: Bot) -> discord.File:
-    loop = asyncio.get_event_loop()
-
     level = get_level_from_xp(xp)
     remaining_xp = get_remaining_xp(xp)
 
@@ -139,6 +136,7 @@ async def generate_placard(member: discord.Member, xp: int, bot: Bot) -> discord
         user_xp=remaining_xp,
         next_xp=get_level_xp(level + 1),
         user_position=bot.get_user_position(member.id),
+        avatar_bytes=await member.display_avatar.read()
     )
 
     return discord.File(fp=fp, filename=f"{member.id}-rank.png")
