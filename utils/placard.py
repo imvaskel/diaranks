@@ -25,6 +25,7 @@ class Generator:
         Status.online: ASSETS / "online.png",
         Status.dnd: ASSETS / "dnd.png",
         Status.offline: ASSETS / "offline.png",
+        Status.idle: ASSETS / "idle.png"
     }
 
     ubuntu_b = ASSETS / "Ubuntu-bold.ttf"

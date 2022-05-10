@@ -10,7 +10,6 @@ python = "^3.9"
 aiohttp = "3.7.4.post0"
 jishaku = {git = "https://github.com/Gorialis/jishaku"}
 asyncpg = "^0.25.0"
-requests = "^2.26.0"
 psutil = "^5.8.0"
 discord-ext-menus = {git = "https://github.com/rapptz/discord-ext-menus"}
 discord-ext-menus-views = {git = "https://github.com/oliver-ni/discord-ext-menus-views"}
