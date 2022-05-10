@@ -49,7 +49,6 @@ class Generator:
     ):
         card = Image.open(cls.background).convert("RGBA")
         avatar = Image.open(BytesIO(avatar_bytes)).convert("RGBA").resize((200, 200))
-
         status = Image.open(cls.presences[user.status]).convert("RGBA").resize((40, 40))
 
         profile_pic_holder = Image.new(
@@ -58,6 +57,7 @@ class Generator:
 
         # Mask to crop image
         mask = Image.new("RGBA", card.size, 0)
+        mask = mask.resize(card.size, Image.ANTIALIAS)
         mask_draw = ImageDraw.Draw(mask)
         mask_draw.ellipse(
             [(67, 40), (213.5, 189)], fill=(255, 25, 255, 255)

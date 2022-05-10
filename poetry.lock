@@ -178,7 +178,7 @@ resolved_reference = "ebe27e606fbacedfd472a65275bcaa197bf30666"
 
 [[package]]
 name = "discord.py"
-version = "2.0.0a4162+g08844985"
+version = "2.0.0a4255+gd319539e"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
@@ -190,7 +190,7 @@ aiohttp = ">=3.6.0,<4"
 
 [package.extras]
 docs = ["sphinx (==4.4.0)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport", "typing-extensions"]
-speed = ["orjson (>=3.5.4)"]
+speed = ["orjson (>=3.5.4)", "aiodns (>=1.1)", "brotli", "cchardet"]
 test = ["coverage", "pytest", "pytest-asyncio", "pytest-cov", "pytest-mock"]
 voice = ["PyNaCl (>=1.3.0,<1.6)"]
 
@@ -198,25 +198,7 @@ voice = ["PyNaCl (>=1.3.0,<1.6)"]
 type = "git"
 url = "https://github.com/rapptz/discord.py"
 reference = "master"
-resolved_reference = "08844985cc2ee78b470db800f52f7e9c67f09726"
-
-[[package]]
-name = "disrank"
-version = "0.0.2"
-description = ""
-category = "main"
-optional = false
-python-versions = "*"
-develop = false
-
-[package.dependencies]
-Pillow = "*"
-
-[package.source]
-type = "git"
-url = "https://github.com/imvaskel/disrank"
-reference = "master"
-resolved_reference = "d28989d660fd1c66634b6d5fc7fd0ebe1a33c2b8"
+resolved_reference = "d319539edb214202b090b01d641c00f0c9d487c3"
 
 [[package]]
 name = "idna"
@@ -258,7 +240,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 
 [[package]]
 name = "jishaku"
-version = "2.4.0a403+g8bc4ed4.master"
+version = "2.5.0a415+ge080c2c.master"
 description = "A discord.py extension including useful tools for bot development and debugging."
 category = "main"
 optional = false
@@ -284,7 +266,7 @@ voice = ["yt-dlp (>=2022.3.8)"]
 type = "git"
 url = "https://github.com/Gorialis/jishaku"
 reference = "master"
-resolved_reference = "8bc4ed45dd810d3ac3c14b104d963c145a1a53a0"
+resolved_reference = "e080c2c62b29bc033857c81d6a99947690ad0899"
 
 [[package]]
 name = "multidict"
@@ -438,7 +420,7 @@ aiohttp = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b6124d47345adc74c70e37e7dda1f219527397393267c05a21081bf2482eb553"
+content-hash = "fa227e8f9247ba45fef373d339a76036b07ecc84722eb0ca7cbed3b9465dea69"
 
 [metadata.files]
 aiohttp = [
@@ -551,7 +533,6 @@ colorama = [
 discord-ext-menus = []
 discord-ext-menus-views = []
 "discord.py" = []
-disrank = []
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
