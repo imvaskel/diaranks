@@ -20,8 +20,9 @@ class ErrorHandler(commands.Cog):
         self._logger: logging.Logger = logging.getLogger(__name__)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error: CommandError):
-        error = getattr(error, "original", error)  # Unpack the error
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
+        if isinstance(error, commands.CommandInvokeError):
+            error = error.original
 
         if isinstance(error, self.ignored_errors):
             return
