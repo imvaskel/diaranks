@@ -54,9 +54,6 @@ class Bot(commands.Bot):
         self.error_color = discord.Color.red()
 
     async def _ainit(self) -> None:
-        self.db = await asyncpg.create_pool(**self.config["bot"]["database"])  # type: ignore
-        assert self.db
-
         rows = await self.db.fetch("SELECT * FROM levels")
         for row in rows:
             self.xp[row["id"]] = row["xp"]
