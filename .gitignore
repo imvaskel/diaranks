@@ -143,3 +143,5 @@ cython_debug/
 config.toml
 dump.sql
 config.yaml
+
+backups
