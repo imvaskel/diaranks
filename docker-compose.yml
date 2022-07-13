@@ -2,6 +2,11 @@ version: "3.8"
 services:
     postgres:
         restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         build:
             context: ./db
             dockerfile: Dockerfile
@@ -9,16 +14,16 @@ services:
             - type: volume
               source: bot-db
               target: /var/lib/postgresql/data
-        environment:
-            - POSTGRES_DB=postgres
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=${pg_password}
+        env_file:
+            - .env
     bot:
         restart: unless-stopped
+        depends_on:
+            postgres:
+                condition: service_healthy
         build:
             context: .
             dockerfile: Dockerfile
-        command: ["./wait-for-it.sh", "postgres:5432", "--", "poetry", "run", "python", "bot.py"]
         env_file:
             - .env
 volumes:
