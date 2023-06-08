@@ -21,7 +21,7 @@ class Misc(commands.Cog):
     @commands.command()
     async def github(self, ctx: commands.Context):
         """Returns the bots github"""
-        await ctx.send("<https://github.com/imVaskel/diaranks>")
+        await ctx.send("<https://github.com/ImVaskel/diaranks>")
 
     @commands.command()
     async def uptime(self, ctx: commands.Context):

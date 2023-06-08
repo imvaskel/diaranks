@@ -15,6 +15,11 @@ from utils import generate_placard, get_level_from_xp
 if TYPE_CHECKING:
     from utils import Bot
 
+class FixedViewMenuPages(ViewMenuPages):
+    async def send_initial_message(self, ctx, channel):
+        page = await self._source.get_page(0)
+        kwargs = await self._get_kwargs_from_page(page)
+        return await self.send_with_view(ctx, **kwargs) # type: ignore
 
 class LeaderboardSource(menus.ListPageSource):
     def __init__(self, data, bot: Bot) -> None:
@@ -149,7 +154,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         """Return the leaderboard, with interactive pagination."""
         await ctx.defer()
 
-        await ViewMenuPages(
+        await FixedViewMenuPages(
             source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)
         ).start(ctx)
 
