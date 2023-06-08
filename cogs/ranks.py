@@ -142,12 +142,10 @@ class RankHandler(commands.Cog, name="Ranks"):
         """
         Get a user's rank placard
         """
-        await ctx.defer()
-
-        file = await generate_placard(member, self.bot.xp.get(member.id, 0), self.bot)
-
         async with ctx.typing():
-            await ctx.send(file=file)
+            file = await generate_placard(member, self.bot.xp.get(member.id, 0), self.bot)
+
+        await ctx.send(file=file)
 
     @commands.hybrid_command(aliases=["lb"])
     async def leaderboard(self, ctx: Context):
