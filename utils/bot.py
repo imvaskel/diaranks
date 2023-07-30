@@ -53,7 +53,7 @@ class Bot(commands.Bot):
 
         self.error_color = discord.Color.red()
 
-    async def _ainit(self) -> None:
+    async def setup_hook(self) -> None:
         rows = await self.db.fetch("SELECT * FROM levels")
         for row in rows:
             self.xp[row["id"]] = row["xp"]

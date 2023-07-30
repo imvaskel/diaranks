@@ -11,15 +11,18 @@ from discord.ext.commands.cog import Cog
 from discord.ext.commands.context import Context
 from discord.ext.menus.views import ViewMenuPages
 from utils import generate_placard, get_level_from_xp
+from utils.utils import Confirm
 
 if TYPE_CHECKING:
     from utils import Bot
+
 
 class FixedViewMenuPages(ViewMenuPages):
     async def send_initial_message(self, ctx, channel):
         page = await self._source.get_page(0)
         kwargs = await self._get_kwargs_from_page(page)
-        return await self.send_with_view(ctx, **kwargs) # type: ignore
+        return await self.send_with_view(ctx, **kwargs)  # type: ignore
+
 
 class LeaderboardSource(menus.ListPageSource):
     def __init__(self, data, bot: Bot) -> None:
@@ -64,7 +67,6 @@ class RankHandler(commands.Cog, name="Ranks"):
         await self.bot.wait_until_ready()
 
         async with self.bot.db.acquire() as conn:
-
             await conn.executemany(
                 (
                     "INSERT INTO LEVELS(id, xp) VALUES($1, $2)"
@@ -89,7 +91,6 @@ class RankHandler(commands.Cog, name="Ranks"):
 
     @Cog.listener("on_message")
     async def add_xp(self, message: discord.Message):
-
         if not message.guild or message.guild.id != self._id:
             return
 
@@ -143,7 +144,9 @@ class RankHandler(commands.Cog, name="Ranks"):
         Get a user's rank placard
         """
         async with ctx.typing():
-            file = await generate_placard(member, self.bot.xp.get(member.id, 0), self.bot)
+            file = await generate_placard(
+                member, self.bot.xp.get(member.id, 0), self.bot
+            )
 
         await ctx.send(file=file)
 
@@ -155,6 +158,21 @@ class RankHandler(commands.Cog, name="Ranks"):
         await FixedViewMenuPages(
             source=LeaderboardSource(self.bot.get_sorted_leaderboard(), self.bot)
         ).start(ctx)
+
+    @commands.hybrid_command()
+    @commands.guild_only()
+    @commands.has_guild_permissions(manage_guild=True)
+    async def reset(self, ctx: Context):
+        await ctx.defer()
+
+        confirm = Confirm(member=ctx.author)
+        await confirm.wait()
+        if not confirm.confirm:
+            return
+
+        await self.bot.db.execute("DELETE FROM ranks")
+        self.bot.xp = {}
+        await ctx.reply("Reset all the ranks!")
 
 
 async def setup(bot):
