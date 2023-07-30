@@ -166,6 +166,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         await ctx.defer()
 
         confirm = Confirm(member=ctx.author)
+        await ctx.send("Confirm.", view=confirm)
         await confirm.wait()
         if not confirm.confirm:
             return
