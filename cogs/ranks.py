@@ -170,7 +170,7 @@ class RankHandler(commands.Cog, name="Ranks"):
         if not confirm.confirm:
             return
 
-        await self.bot.db.execute("DELETE FROM ranks")
+        await self.bot.db.execute("DELETE FROM levels;")
         self.bot.xp = {}
         await ctx.reply("Reset all the ranks!")
 
