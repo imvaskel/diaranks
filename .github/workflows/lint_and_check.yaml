@@ -5,7 +5,7 @@ name: Type Coverage and Linting
 on:
   push:
     branches:
-      - main
+      - rewrite
   pull_request:
     branches:
       - main
