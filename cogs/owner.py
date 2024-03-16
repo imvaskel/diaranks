@@ -15,8 +15,6 @@ if TYPE_CHECKING:
 
     from utils import Bot, GuildContext
 
-NEWLINE = "\n"  # Why f-strings
-
 
 class CleanupFlags(commands.FlagConverter, prefix="/", delimiter="", case_insensitive=True):
     num: int = 5
