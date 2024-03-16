@@ -145,3 +145,4 @@ dump.sql
 config.yaml
 
 backups
+.ruff_cache

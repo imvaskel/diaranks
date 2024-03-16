@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
+
 import discord
-from discord.components import Button
 from discord.enums import ButtonStyle
-from discord.interactions import Interaction
 
 __all__ = ("traceback_maker", "Confirm")
 
 import traceback
 
 if TYPE_CHECKING:
-    from typing import Union
+    from discord.interactions import Interaction
+    from discord.ui import Button
 
 
 def traceback_maker(exc: Exception) -> str:
@@ -24,12 +24,7 @@ def traceback_maker(exc: Exception) -> str:
 
 
 class Confirm(discord.ui.View):
-    def __init__(
-        self,
-        timeout: Optional[float] = 180,
-        *,
-        member: Union[discord.Member, discord.User]
-    ):
+    def __init__(self, timeout: float | None = 180, *, member: discord.Member | discord.User) -> None:
         super().__init__(timeout=timeout)
         self.member = member
 
@@ -42,9 +37,7 @@ class Confirm(discord.ui.View):
     async def interaction_check(self, interaction: Interaction) -> bool:
         if interaction.user == self.member:
             return True
-        await interaction.response.send_message(
-            "This is not your button.", ephemeral=True
-        )
+        await interaction.response.send_message("This is not your button.", ephemeral=True)
         return False
 
     @discord.ui.button(label="Yes", style=ButtonStyle.green)

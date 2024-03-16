@@ -1,24 +1,27 @@
-from datetime import datetime
 import logging
 import operator
-from typing import TYPE_CHECKING, Any, Dict, List, Union, Optional
+import pathlib
+from datetime import datetime
+from typing import TYPE_CHECKING
 
-import asyncpg
 import discord
 import yaml
 from discord.ext import commands
 from discord.ext.commands.errors import ExtensionError
 
-from .config import Config
+if TYPE_CHECKING:
+    import asyncpg
+
+    from .config import Config
 
 
 class Bot(commands.Bot):
     if TYPE_CHECKING:
         owner_ids: list[int]
-        db: asyncpg.Pool
+        db: asyncpg.Pool[asyncpg.Record]
 
     def __init__(self) -> None:
-        with open("./config.yaml") as fs:
+        with pathlib.Path("./config.yaml").open() as fs:
             self.config: Config = yaml.load(fs, Loader=yaml.Loader)
 
         self.logger = logging.getLogger(__name__)
@@ -45,39 +48,37 @@ class Bot(commands.Bot):
             intents=discord.Intents.all(),
         )
 
-        self.roles: Dict[int, int] = {}  # Level, Role ID
-        self.xp: Dict[int, int] = {}  # User ID, XP
-        self.blacklist: List[int] = []  # list of blacklisted channel ids
+        self.roles: dict[int, int] = {}  # Level, Role ID
+        self.xp: dict[int, int] = {}  # User ID, XP
+        self.blacklist: list[int] = []  # list of blacklisted channel ids
 
         self._configure_logging()
 
         self.error_color = discord.Color.red()
 
-    async def setup_hook(self) -> None:
-        rows = await self.db.fetch("SELECT * FROM levels")
-        for row in rows:
+    async def fetch_rows(self) -> None:
+        levels = await self.db.fetch("SELECT * FROM levels")
+        for row in levels:
             self.xp[row["id"]] = row["xp"]
 
-        rows = await self.db.fetch("SELECT * FROM roles")
-        for row in rows:
+        roles = await self.db.fetch("SELECT * FROM roles")
+        for row in roles:
             self.roles[row["level"]] = row["id"]
 
-        rows = await self.db.fetch("SELECT * FROM blacklist")
-        for row in rows:
+        blacklist = await self.db.fetch("SELECT * FROM blacklist")
+        for row in blacklist:
             self.blacklist.append(row["id"])
 
     async def _load_extensions(self) -> None:
         for extension in self.config["bot"]["extensions"]:
             try:
                 await self.load_extension(extension)
-                self.logger.info(f"Loaded extension {extension}")
-            except ExtensionError as e:
-                self.logger.error(
-                    f"Failed to load extension {extension} \n{e}", exc_info=True
-                )
+                self.logger.info("Loaded extension %s", extension)
+            except ExtensionError:
+                self.logger.exception("Failed to load extension %s \n", extension)
 
     async def setup_hook(self) -> None:
-        await self._ainit()
+        await self.fetch_rows()
         await self._load_extensions()
 
     def _configure_logging(self) -> None:
@@ -89,10 +90,10 @@ class Bot(commands.Bot):
         handler.setFormatter(logging.Formatter(config["format"]))
         logger.addHandler(handler)
 
-    def run(self, token=None) -> None:
+    def run(self, token: str | None = None) -> None:
         return super().run(token or self.config["bot"]["token"])
 
-    async def start(self, token=None) -> None:
+    async def start(self, token: str | None = None) -> None:
         return await super().start(token or self.config["bot"]["token"])
 
     async def on_message(self, message: discord.Message) -> None:
@@ -104,7 +105,7 @@ class Bot(commands.Bot):
     def get_sorted_leaderboard(self) -> list[tuple[int, int]]:
         return sorted(self.xp.items(), key=operator.itemgetter(1), reverse=True)
 
-    def get_user_position(self, user: Union[int, discord.User]) -> int:
+    def get_user_position(self, user: int | discord.User) -> int:
         if isinstance(user, discord.User):
             user = user.id
 

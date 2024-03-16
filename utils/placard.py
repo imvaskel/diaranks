@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -10,22 +9,25 @@ from discord import Status
 from jishaku.functools import executor_function
 from PIL import Image, ImageDraw, ImageFont
 
-from .bot import Bot
 from .levels import get_level_from_xp, get_level_xp, get_remaining_xp
 
 if TYPE_CHECKING:
+    from typing import ClassVar
+
     from discord import Member
+
+    from .bot import Bot
 
 ASSETS = Path(__file__).parent / "assets"
 
 
 class Generator:
     background = ASSETS / "card.png"
-    presences: dict[Status, Path] = {
+    presences: ClassVar[dict[Status, Path]] = {
         Status.online: ASSETS / "online.png",
         Status.dnd: ASSETS / "dnd.png",
         Status.offline: ASSETS / "offline.png",
-        Status.idle: ASSETS / "idle.png"
+        Status.idle: ASSETS / "idle.png",
     }
 
     ubuntu_b = ASSETS / "Ubuntu-bold.ttf"
@@ -47,35 +49,32 @@ class Generator:
         next_xp: int,
         user_position: int,
         avatar_bytes: bytes,
-    ):
+    ) -> BytesIO:
         card = Image.open(cls.background).convert("RGBA")
         avatar = Image.open(BytesIO(avatar_bytes)).convert("RGBA").resize((200, 200))
         status = Image.open(cls.presences[user.status]).convert("RGBA").resize((40, 40))
 
-        profile_pic_holder = Image.new(
-            "RGBA", card.size, (155, 155, 155)
-        )  # Is used for a blank image so that i can mask
+        profile_pic_holder = Image.new("RGBA", card.size, (155, 155, 155))  # Is used for a blank image so that i can mask
 
         # Mask to crop image
         mask = Image.new("RGBA", card.size, 0)
-        mask = mask.resize(card.size, Image.ANTIALIAS)
+        mask = mask.resize(card.size, Image.ANTIALIAS)  # type: ignore - Pil does dynamic stuff here
         mask_draw = ImageDraw.Draw(mask)
-        mask_draw.ellipse(
-            [(67, 40), (213.5, 189)], fill=(255, 25, 255, 255)
-        )  # The part need to be cropped
+        mask_draw.ellipse([(67, 40), (213.5, 189)], fill=(255, 25, 255, 255))  # The part need to be cropped
 
         # Editing stuff here
         WHITE = (242, 242, 242)
         DARK = (110, 151, 241)
         YELLOW = (255, 234, 167)
 
-        def get_str(xp):
+        def get_str(xp: int) -> str:
             if xp < 1000:
                 return str(xp)
             if xp >= 1000 and xp < 1000000:
                 return str(round(xp / 1000, 1)) + "k"
             if xp > 1000000:
                 return str(round(xp / 1000000, 1)) + "M"
+            raise Exception("Unreachable")
 
         draw = ImageDraw.Draw(card)
         draw.text((290, 79), "Server", WHITE, font=cls.font_med)
@@ -91,7 +90,7 @@ class Generator:
         )
         draw.text((259, 15), user.name, WHITE, font=cls.font_large)
         draw.text((274, 155), f"#{user_position}", DARK, font=cls.font_normal)
-        draw.text((610, 83), f"Level", WHITE, font=cls.font_med)
+        draw.text((610, 83), "Level", WHITE, font=cls.font_med)
         draw.text((610, 154), f"{level}", WHITE, font=cls.font_normal)
 
         # Adding another blank layer for the progress bar
@@ -137,7 +136,7 @@ async def generate_placard(member: discord.Member, xp: int, bot: Bot) -> discord
         user_xp=remaining_xp,
         next_xp=get_level_xp(level + 1),
         user_position=bot.get_user_position(member.id),
-        avatar_bytes=await member.display_avatar.read()
+        avatar_bytes=await member.display_avatar.read(),
     )
 
     return discord.File(fp=fp, filename=f"{member.id}-rank.png")
