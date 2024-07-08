@@ -97,7 +97,7 @@ class Generator:
         # Because drawing on card dont make their background transparent
         blank = Image.new("RGBA", card.size, (255, 255, 255, 0))
         blank_draw = ImageDraw.Draw(blank)
-        blank_draw.rectangle((0, 250, 900, 230), fill=(7, 7, 7))
+        blank_draw.rectangle((0, 230, 900, 250), fill=(7, 7, 7))
 
         xpneed = next_xp - current_xp
         xphave = user_xp - current_xp
